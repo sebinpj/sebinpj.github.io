@@ -1,1 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+        content="Hi i'm Sebin P Johnson, and i make amazing websites, cool apps and crazy business ideas possible">
+  <meta name="og:description"
+        content="Hi i'm Sebin P Johnson, and i make amazing websites, cool apps and crazy business ideas possible">
+  <meta name="og:image" content="https://miro.medium.com/fit/c/256/256/0*I4MIcLD99HX7-WZY">
+  <meta name="og:url" content="sebinpj.github.io">
+  <title>Sebin's Portfolio</title>
+</head>
 
+<body>
+<header>
+  <h1>I make amazing web experiences</h1>
+  <aside>Hi i'm Sebin P Johnson, and i make amazing websites, cool apps and crazy business ideas possible</aside>
+</header>
+
+<h2>Brief intro</h2>
+
+<p>I have been working as a professional software developer for the past <span id="experience">2+ Years</span> , and I
+  am known
+  to be a fast learner, good communicator and a pragmatic programmer :}
+  <br>The following are the tech stacks that i have experience with</p>
+<ul>
+  <li>NodeJS</li>
+  <li>Javascript</li>
+  <li>SCSS</li>
+  <li>Java SpringBoot</li>
+  <li>Docker</li>
+  <li>Kubernetes</li>
+  <li>Angular 7/8/9</li>
+  <li>React</li>
+  <li>Ionic</li>
+  <li>Flutter</li>
+</ul>
+
+<h3>Some of the projects that i worked on</h3>
+
+<p>Im including some of the projects that i worked in the past below feel free to take a look</p>
+<blockquote>
+  - <a href="https://play.google.com/store/apps/details?id=com.psctalks&hl=en_IN" target="_blank">PSCTalks</a> a VOD
+  application based
+  on Ionic 3<br>
+  - <a href="https://warehowz.covintusdev.com/" target="_blank">Warehowz</a> a portfolio website for a SaaS company<br>
+  - <a href="https://github.com/sebinpj/wesaboo" target="_blank">Wesaboo</a> a boilerplate for modern webdevelopment
+  using webpack<br>
+  - <a href="https://github.com/sebinpj/gusaboo" target="_blank">Gusaboo</a> a boilerplate for modern webdevelopment
+  using gulp<br>
+  - There are many more ...
+</blockquote>
+
+<hr>
+
+<h2>Epilogue</h2>
+<p>This portfolio is inspired from this <a href="http://motherfuckingwebsite.com/" target="_blank">website</a>.</p>
+<p>- contact me @ <a href="mailto:sebin@disroot.org" target="_blank">sebin@disroot.org</a> for any project enquires</p>
+<footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.25.0/moment.min.js"
+          integrity="sha256-imB/oMaNA0YvIkDkF5mINRWpuFPEGVCEkHy6rm2lAzA=" crossorigin="anonymous"></script>
+  <script>
+    const currentDate = moment();
+    const joinDate = moment([2017, 6, 19]);
+
+    const years = currentDate.diff(joinDate, 'year');
+    joinDate.add(years, 'years');
+
+    const months = currentDate.diff(joinDate, 'months');
+    joinDate.add(months, 'months');
+
+    const days = currentDate.diff(joinDate, 'days');
+
+    document.getElementById("experience").innerText = `${years} years ${months} months and ${days} days`;
+  </script>
+</footer>
+
+</body>
+</html>
