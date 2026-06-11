@@ -1,0 +1,140 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+/* No CSS scroll-behavior: smooth here — it turns Chrome's scroll restoration
+   into a slow glide and fights ScrollTrigger. Anchor clicks get smooth
+   scrolling in JS instead. */
+html {
+  background: var(--ink-0);
+}
+
+/* Background lives on html only — body must stay transparent so the
+   fixed canvas/nebula (negative z-index) remain visible beneath content. */
+body {
+  margin: 0;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink-0);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* WebGL canvas sits behind everything; fades in once the first frame renders. */
+#gl {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+#gl.is-live { opacity: 1; }
+
+/* Static fallback atmosphere — visible until (or instead of) WebGL. */
+.nebula {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(60rem 40rem at 78% 12%, oklch(0.22 0.05 var(--accent-h) / 0.5), transparent 65%),
+    radial-gradient(50rem 50rem at 12% 85%, oklch(0.19 0.04 280 / 0.55), transparent 70%),
+    var(--ink-0);
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transform: translateY(-300%);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.skip-link:focus-visible { transform: none; }
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem var(--gutter);
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.site-header.is-scrolled {
+  background: oklch(0.13 0.015 250 / 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.site-header a { text-decoration: none; }
+
+.site-header__name {
+  font-family: var(--font-display);
+  font-weight: 540;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.site-header__cta {
+  font-family: var(--font-mono);
+  font-size: var(--size-small);
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 0.4rem 1rem;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.site-header__cta:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
+/* Right-edge chapter progress dots (decorative). */
+.chapter-dots {
+  position: fixed;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.chapter-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-3);
+  opacity: 0.45;
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.chapter-dots span.is-active {
+  background: var(--accent);
+  opacity: 1;
+  transform: scale(1.45);
+}
+
+@media (max-width: 720px) {
+  .chapter-dots { display: none; }
+}

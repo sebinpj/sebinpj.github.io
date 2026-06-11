@@ -1,0 +1,21 @@
+# Sebin P Johnson
+
+> Engineering Manager, AI at Magnit Global. Self-taught engineer with 9+ years
+> across full-stack, data infrastructure, and AI product engineering. Based in
+> Kerala, India, working remotely.
+
+This is a single-page portfolio. The page tells the story in nine chapters:
+self-taught origins; Edstem Technologies (2017–2021, junior → lead, WhatsApp
+Web automation before official APIs existed); PSCTalks (exam-coaching app
+built solo, 500k+ downloads, 4.6★); WillHire (lead full-stack, acquired by
+PRO Unlimited / Magnit in 2021); Magnit data infrastructure (near-zero-downtime
+Oracle→Postgres migration via Kafka + Debezium, the "Data Ocean" OLAP
+warehouse); and Maggi (Magnit's GenAI companion — LLM orchestration, RAG over
+pgvector — built by his team of eleven).
+
+## Contact
+
+- Email: me@sebins.in
+- LinkedIn: https://www.linkedin.com/in/sebin-p-johnson/
+- GitHub: https://github.com/sebinpj
+- Blog: https://blog.sebins.in
