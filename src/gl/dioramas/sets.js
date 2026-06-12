@@ -18,7 +18,6 @@ import {
   lantern,
   octa,
   palm,
-  pavilion,
   phone,
   scrollProp,
   sphere,
@@ -35,15 +34,21 @@ const sway = (amp = 0.05, speed = 1, phase = 0) => (o, t, b) => {
   o.rotation.z = b.rz + Math.sin(t * speed + phase) * amp;
 };
 
-// 00 · hero — the summit: a pavilion on a floating peak above the cloud
-// sea. Deliberately the busiest set on the page; everything below it
-// thins out as the story descends.
+// 00 · hero — the summit workshop: a machine on a floating peak that turns
+// raw blocks into the artifacts whose stories the chapters below tell —
+// a robot, a phone, a database, a browser. Problems in, products out.
+// Deliberately the busiest set on the page; everything below it thins out
+// as the story descends.
 export function buildHero() {
   const d = new Diorama();
   d.prop(blobShadow(1.9, -2.6), { delay: 0, span: 0.3, drop: 0 });
 
+  // The island bob every grounded piece shares; the loop riders add the
+  // same term so they never drift against the lawn.
+  const isleBob = (t) => Math.sin(t * 0.7) * 0.06;
+
   // The peak itself — inverted stone cone, a pine collar, a grassy crown.
-  // The pavilion, desk and tree share its bob (same amp/speed/phase) so the
+  // The machine and tree share its bob (same amp/speed/phase) so the
   // whole summit floats as one piece.
   const peak = new Group();
   const rock = cone(1.6, 1.9, P.earth);
@@ -62,27 +67,157 @@ export function buildHero() {
   }
   d.prop(peak, { delay: 0, span: 0.45, drop: 0.8, idle: bob(0.06, 0.7) });
 
-  const hall = pavilion();
-  hall.position.set(0.12, 0.22, -0.1);
-  d.prop(hall, { delay: 0.18, span: 0.45, drop: 0.6, idle: bob(0.06, 0.7) });
+  // The workshop machine: rice shell, vermillion roof lip, a porthole
+  // showing the core, a chimney, and a gold delivery spout on the right.
+  const body = new Group();
+  const shell = box(1.15, 0.85, 0.8, P.rice);
+  const lip = box(1.3, 0.13, 0.92, P.vermillion);
+  lip.position.y = 0.49;
+  const ring = cyl(0.26, 0.26, 0.08, P.slate, true, 18);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.set(-0.28, 0.05, 0.38);
+  const chimney = cyl(0.09, 0.12, 0.34, P.slate, true, 12);
+  chimney.position.set(0.38, 0.62, -0.15);
+  const spoutTube = cyl(0.14, 0.14, 0.5, P.gold);
+  spoutTube.rotation.z = Math.PI / 2;
+  spoutTube.position.set(0.8, 0.04, 0);
+  const spoutRim = cyl(0.17, 0.17, 0.1, P.gold);
+  spoutRim.rotation.z = Math.PI / 2;
+  spoutRim.position.set(1.08, 0.04, 0);
+  body.add(shell, lip, ring, chimney, spoutTube, spoutRim);
+  body.position.set(0.18, 0.58, -0.1);
+  d.prop(body, { delay: 0.18, span: 0.45, drop: 0.6, idle: bob(0.06, 0.7) });
 
-  // The desk sits inside the pavilion — the work happens at the summit.
-  const desk = new Group();
-  const top = box(1.05, 0.09, 0.65, P.earth);
-  for (const sx of [-1, 1]) {
-    const leg = box(0.07, 0.42, 0.07, P.ink, false);
-    leg.position.set(sx * 0.42, -0.25, 0);
-    desk.add(leg);
+  // Intake funnel above the left shoulder — raw blocks drop straight in.
+  const funnel = new Group();
+  const mouth = cyl(0.46, 0.16, 0.45, P.jade);
+  const neck = cyl(0.1, 0.1, 0.32, P.jade);
+  neck.position.y = -0.36;
+  funnel.add(mouth, neck);
+  funnel.position.set(-0.32, 1.42, -0.1);
+  d.prop(funnel, { delay: 0.3, span: 0.4, drop: 0.5, idle: bob(0.06, 0.7) });
+
+  // Two face gears, counter-rotating; a rim bolt makes the spin legible.
+  const gears = new Group();
+  const gearAt = (x, y, r) => {
+    const g = new Group();
+    const disc = cyl(r, r, 0.09, P.gold, true, 8);
+    disc.rotation.x = Math.PI / 2;
+    const bolt = box(0.05, 0.05, 0.04, P.slate, false);
+    bolt.position.set(0, r * 0.6, 0.07);
+    g.add(disc, bolt);
+    g.position.set(x, y, 0.34);
+    gears.add(g);
+  };
+  gearAt(0.42, 0.74, 0.2);
+  gearAt(0.7, 0.47, 0.15);
+  d.prop(gears, {
+    delay: 0.42,
+    span: 0.35,
+    drop: 0.3,
+    idle: (o, t, b) => {
+      o.position.y = b.py + isleBob(t);
+      o.children[0].rotation.z = t * 1.1;
+      o.children[1].rotation.z = -t * 1.5 + 0.3;
+    },
+  });
+
+  // The glowing core in the porthole — the machine's pulse.
+  const core = octa(0.16, P.gold);
+  core.position.set(-0.1, 0.63, 0.33);
+  d.prop(core, {
+    delay: 0.48,
+    span: 0.3,
+    drop: 0.2,
+    idle: (o, t, b) => {
+      o.position.y = b.py + isleBob(t);
+      o.rotation.y = t * 1.4;
+      const s = 1 + Math.sin(t * 2.2) * 0.16;
+      o.scale.set(b.sx * s, b.sy * s, b.sz * s);
+    },
+  });
+
+  // Chimney steam: one puff on a rising shrink-out loop (toon materials are
+  // shared, so loops shrink instead of fading).
+  const steam = cloud(0.16);
+  steam.position.set(0.56, 1.5, -0.25);
+  d.prop(steam, {
+    delay: 0.58,
+    span: 0.3,
+    drop: 0.2,
+    idle: (o, t, b) => {
+      const u = (t * 0.25) % 1;
+      o.position.y = b.py + u * 0.5 + isleBob(t);
+      o.scale.setScalar(b.sx * (0.7 + u * 0.6) * Math.min(1, (1 - u) * 4));
+    },
+  });
+
+  // Raw blocks falling into the funnel — unshaped problems, dropping in.
+  for (let i = 0; i < 3; i += 1) {
+    const cube = box(0.2, 0.2, 0.2, i % 2 ? P.earth : P.slate);
+    cube.position.set(-0.32, 2.0 + i * 0.35, -0.1);
+    d.prop(cube, {
+      delay: 0.62 + i * 0.04,
+      span: 0.3,
+      drop: 0.2,
+      idle: (o, t, b) => {
+        const u = (t * 0.22 + i / 3) % 1;
+        o.position.set(-0.32 + Math.sin(i * 9 + u * 2) * 0.1, 2.6 - u * 1.05 + isleBob(t), -0.1);
+        o.rotation.set(t * 0.8 + i, u * 3, 0);
+        o.scale.setScalar(b.sx * Math.min(1, u * 6, (1 - u) * 5));
+      },
+    });
   }
-  const base = box(0.52, 0.05, 0.38, P.slate);
-  base.position.set(0.02, 0.07, 0.05);
-  const screen = box(0.52, 0.38, 0.05, P.azure);
-  screen.position.set(0.02, 0.26, -0.1);
-  screen.rotation.x = -0.18;
-  desk.add(top, base, screen);
-  desk.scale.setScalar(0.7);
-  desk.position.set(0.12, 0.61, -0.05);
-  d.prop(desk, { delay: 0.3, span: 0.4, drop: 0.5, idle: bob(0.06, 0.7) });
+
+  // Finished artifacts drifting out of the spout and up past the sun — each
+  // one a miniature of a chapter below: robot (AI), phone (mobile),
+  // database (data), browser (web). The machine builds the whole page.
+  const miniBot = new Group();
+  const skull = box(0.3, 0.24, 0.22, P.rice);
+  const face = box(0.22, 0.13, 0.03, P.ink, false);
+  face.position.set(0, -0.01, 0.12);
+  const antenna = cyl(0.015, 0.015, 0.12, P.slate, false, 6);
+  antenna.position.y = 0.16;
+  const antennaTip = sphere(0.05, P.vermillion, false, 10);
+  antennaTip.position.y = 0.24;
+  miniBot.add(skull, face, antenna, antennaTip);
+
+  const miniDb = new Group();
+  for (let k = 0; k < 3; k += 1) {
+    const disc = cyl(0.16, 0.16, 0.09, P.jade, true, 16);
+    disc.position.y = k * 0.13 - 0.13;
+    miniDb.add(disc);
+  }
+
+  const miniBrowser = new Group();
+  const pane = box(0.42, 0.32, 0.05, P.white);
+  const bar = box(0.42, 0.07, 0.06, P.vermillion, false);
+  bar.position.set(0, 0.125, 0.005);
+  const rowA = box(0.3, 0.04, 0.02, P.azure, false);
+  rowA.position.set(0, 0.02, 0.035);
+  const rowB = box(0.22, 0.04, 0.02, P.jade, false);
+  rowB.position.set(-0.04, -0.07, 0.035);
+  miniBrowser.add(pane, bar, rowA, rowB);
+
+  [miniBot, phone(0.26, 0.5, P.azure), miniDb, miniBrowser].forEach((a, i) => {
+    a.position.set(1.35 + i * 0.12, 0.62 + i * 0.55, -0.1);
+    d.prop(a, {
+      delay: 0.66 + i * 0.04,
+      span: 0.3,
+      drop: 0.2,
+      idle: (o, t, b) => {
+        const u = (t * 0.09 + i * 0.25) % 1;
+        const rise = Math.max(0, (u - 0.12) / 0.88);
+        o.position.set(
+          1.32 + rise * (0.3 + (i % 2) * 0.25) + Math.sin(rise * 4 + i * 2.1) * 0.15,
+          0.62 + rise * 1.7 + isleBob(t),
+          -0.1 + Math.sin(i * 3.7) * 0.25,
+        );
+        o.rotation.y = t * 0.5 + i;
+        o.scale.setScalar(b.sx * Math.min(1, u * 7, (1 - u) * 5));
+      },
+    });
+  });
 
   const pine = new Group();
   const trunk = cyl(0.06, 0.09, 0.4, P.earth, false, 10);
@@ -95,7 +230,7 @@ export function buildHero() {
   d.prop(pine, { delay: 0.38, span: 0.4, drop: 0.5, idle: bob(0.06, 0.7) });
 
   const lamp = lantern(0.55);
-  lamp.position.set(1.08, 0.85, 0.45);
+  lamp.position.set(-0.98, 0.95, 0.32);
   d.prop(lamp, { delay: 0.5, span: 0.35, drop: 0.4, idle: bob(0.07, 1.1, 2.3) });
 
   const sun = new Group();
