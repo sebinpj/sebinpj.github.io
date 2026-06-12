@@ -1,9 +1,12 @@
 import { isTouchPrimary } from '../utils/env.js';
 
+// The toon stage is light (a few hundred low-poly meshes at most), so tiers
+// mostly govern pixel ratio; `low` also drops the inverted-hull outlines,
+// which halve the draw-call count.
 const TIERS = {
-  high: { textureSize: 256, dprCap: 2, pointSize: 3.4, opacity: 0.5 },
-  mid: { textureSize: 128, dprCap: 1.5, pointSize: 5.2, opacity: 0.42 },
-  low: { textureSize: 64, dprCap: 1, pointSize: 7.5, opacity: 0.48 },
+  high: { dprCap: 2, outlines: true },
+  mid: { dprCap: 1.5, outlines: true },
+  low: { dprCap: 1, outlines: false },
 };
 
 export class QualityManager {
@@ -11,7 +14,7 @@ export class QualityManager {
     const coarse = isTouchPrimary();
     const smallScreen = Math.min(screen.width, screen.height) < 800;
     const lowMemory = navigator.deviceMemory !== undefined && navigator.deviceMemory < 4;
-    this.tierName = (coarse && smallScreen) || lowMemory ? 'mid' : 'high';
+    this.tierName = lowMemory ? 'low' : coarse && smallScreen ? 'mid' : 'high';
 
     // Rolling FPS watchdog: sustained slow frames step the pixel ratio down
     // before they ever read as jank.

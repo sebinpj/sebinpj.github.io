@@ -1,35 +1,43 @@
 :root {
   /* Accent hue is scroll-driven (GSAP writes --accent-h per chapter). */
-  --accent-h: 185;
+  --accent-h: 230;
 
-  --ink-0: oklch(0.13 0.015 250);
-  --ink-1: oklch(0.17 0.02 250);
-  --ink-2: oklch(0.22 0.025 250);
-  --text-1: oklch(0.93 0.01 250);
-  --text-2: oklch(0.72 0.015 250);
-  --text-3: oklch(0.55 0.015 250);
-  --accent: oklch(0.8 0.14 var(--accent-h));
-  --accent-dim: oklch(0.8 0.14 var(--accent-h) / 0.35);
-  --line: oklch(0.93 0.01 250 / 0.1);
+  /* Warm paper + candy world */
+  --paper: oklch(0.965 0.022 90);
+  --card: oklch(0.99 0.01 95);
+  --ink: oklch(0.31 0.05 280);
+  --ink-soft: oklch(0.43 0.04 280);
+  --ink-faint: oklch(0.54 0.035 280);
+  --accent: oklch(0.64 0.17 var(--accent-h));
+  --accent-bright: oklch(0.72 0.18 var(--accent-h));
+  --accent-soft: oklch(0.64 0.17 var(--accent-h) / 0.3);
+  --line: oklch(0.31 0.05 280 / 0.16);
 
   --font-display: 'Fraunces', 'Georgia', serif;
   --font-body: 'Schibsted Grotesk', 'Helvetica Neue', sans-serif;
   --font-mono: 'Spline Sans Mono', 'SFMono-Regular', monospace;
 
-  --size-hero: clamp(2.4rem, 1.2rem + 5.4vw, 5.2rem);
-  --size-title: clamp(1.9rem, 1rem + 3.6vw, 3.6rem);
-  --size-stat: clamp(2.8rem, 1.4rem + 7vw, 6.5rem);
-  --size-body: clamp(1.02rem, 0.95rem + 0.3vw, 1.18rem);
+  --size-hero: clamp(2.5rem, 1.3rem + 5.2vw, 4.9rem);
+  --size-title: clamp(1.9rem, 1.05rem + 3.4vw, 3.3rem);
+  --size-stat: clamp(2.7rem, 1.4rem + 6.4vw, 5.8rem);
+  --size-body: clamp(1rem, 0.94rem + 0.28vw, 1.14rem);
   --size-small: 0.85rem;
 
   --space-1: 0.5rem;
   --space-2: 1rem;
-  --space-3: 1.75rem;
-  --space-4: 3rem;
-  --space-5: 5rem;
+  --space-3: 1.6rem;
+  --space-4: 2.6rem;
+  --space-5: 4rem;
 
-  --measure: 38rem;
-  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --measure: 36rem;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+
+  /* Sticker design language */
+  --radius-sticker: 1.1rem;
+  --border-sticker: 2px solid var(--ink);
+  --shadow-sticker: 0.22rem 0.3rem 0 oklch(0.31 0.05 280 / 0.9);
+  --shadow-sticker-sm: 0.14rem 0.2rem 0 oklch(0.31 0.05 280 / 0.85);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 }

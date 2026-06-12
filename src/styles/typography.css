@@ -33,8 +33,8 @@
 body {
   font-family: var(--font-body);
   font-size: var(--size-body);
-  line-height: 1.65;
-  color: var(--text-1);
+  line-height: 1.62;
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -42,9 +42,12 @@ body {
 h1, h2, h3 {
   font-family: var(--font-display);
   font-optical-sizing: auto;
-  font-weight: 480;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
+  /* SOFT rounds the serifs, WONK swaps in the playful alternates —
+     this is what makes Fraunces read "storybook" instead of "editorial". */
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-weight: 640;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
   text-wrap: balance;
   margin: 0;
 }
@@ -59,8 +62,9 @@ h1, h2, h3 {
 .nowrap { white-space: nowrap; }
 
 a {
-  color: var(--text-1);
-  text-decoration-color: var(--accent-dim);
+  color: var(--ink);
+  text-decoration-color: var(--accent-soft);
+  text-decoration-thickness: 2px;
   text-underline-offset: 0.2em;
   transition: text-decoration-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
 }

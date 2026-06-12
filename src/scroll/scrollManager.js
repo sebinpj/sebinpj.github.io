@@ -13,26 +13,40 @@ export function initScroll() {
   const root = document.documentElement;
 
   // --- Chapter morph driver -------------------------------------------------
-  // Each section's approach scrubs chapterProgress from i-1 → i and slides the
-  // accent hue with it. fromTo keeps every tween deterministic when scrubbing
-  // backwards through the whole story.
+  // Each section's approach scrubs its own 0→1 segment; chapterProgress is the
+  // SUM of the segments. Tweens writing the shared value directly break on
+  // multi-chapter jumps (anchor links, Home/End) — several scrubs animate at
+  // once and the last one to finish wins. A sum is order-independent.
+  const segs = sections.map(() => ({ v: 0 }));
+  const lastHue = CHAPTER_HUES.length - 1;
+  const syncState = () => {
+    let cp = 0;
+    for (let i = 1; i < segs.length; i += 1) cp += segs[i].v;
+    glState.chapterProgress = cp;
+    const ia = Math.min(Math.floor(cp), lastHue);
+    const a = CHAPTER_HUES[ia];
+    glState.accentH = a + (CHAPTER_HUES[Math.min(ia + 1, lastHue)] - a) * (cp - ia);
+    root.style.setProperty('--accent-h', glState.accentH.toFixed(1));
+  };
   sections.forEach((section, i) => {
     if (i === 0) return;
+    // The final section can never scroll its top to 20% of the viewport —
+    // the page ends first — so its scrub finishes higher up.
+    const isLast = i === sections.length - 1;
     gsap.fromTo(
-      glState,
-      { chapterProgress: i - 1, accentH: CHAPTER_HUES[i - 1] },
+      segs[i],
+      { v: 0 },
       {
-        chapterProgress: i,
-        accentH: CHAPTER_HUES[i],
+        v: 1,
         ease: 'none',
         immediateRender: false,
         scrollTrigger: {
           trigger: section,
           start: 'top 90%',
-          end: 'top 20%',
+          end: isLast ? 'top 45%' : 'top 20%',
           scrub: 0.8,
         },
-        onUpdate: () => root.style.setProperty('--accent-h', glState.accentH.toFixed(1)),
+        onUpdate: syncState,
       },
     );
   });

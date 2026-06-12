@@ -1,11 +1,17 @@
-import { PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
+import {
+  DirectionalLight,
+  HemisphereLight,
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+} from 'three';
 import { gsap } from 'gsap';
-import { ParticleSystem } from './ParticleSystem.js';
+import { DioramaStage } from './DioramaStage.js';
 import { QualityManager } from './QualityManager.js';
 import { CameraRig } from './CameraRig.js';
+import { setOutlinesEnabled } from './toon.js';
 import { glState } from '../scroll/state.js';
-import { oklchToSRGB } from '../utils/color.js';
-import { clamp } from '../utils/math.js';
+import { clamp, damp } from '../utils/math.js';
 import { isTouchPrimary } from '../utils/env.js';
 
 let experience = null;
@@ -14,11 +20,12 @@ class Experience {
   constructor(canvas) {
     this.canvas = canvas;
     this.quality = new QualityManager();
+    setOutlinesEnabled(this.quality.tier.outlines);
 
     this.renderer = new WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: false,
+      antialias: true, // low-poly toon edges need it; the scene is cheap enough
       powerPreference: 'high-performance',
     });
     this.renderer.setClearColor(0x000000, 0);
@@ -27,21 +34,20 @@ class Experience {
     this.camera = new PerspectiveCamera(50, 1, 0.1, 60);
     this.rig = new CameraRig(this.camera);
 
-    this.particles = new ParticleSystem({
-      textureSize: this.quality.tier.textureSize,
-      pixelRatio: this.quality.pixelRatio(),
-      pointSize: this.quality.tier.pointSize,
-      opacity: this.quality.tier.opacity,
-    });
-    this.scene.add(this.particles.points);
+    // Toon lighting: one key light for the cel bands, a warm hemisphere fill.
+    const key = new DirectionalLight(0xfff6e8, 2.2);
+    key.position.set(3.5, 5, 4);
+    const fill = new HemisphereLight(0xfdf6ff, 0xd8b58a, 1.0);
+    this.scene.add(key, fill);
+
+    this.stage = new DioramaStage();
+    this.scene.add(this.stage.group);
 
     this.quality.onDemote = () => this._applySize();
 
     this._time = 0;
+    this._lean = 0;
     this._contextLosses = 0;
-    this._pointerWorld = new Vector3(999, 999, 999);
-    this._pointerForce = 0;
-    this._pointerTargetForce = 0;
 
     this._onResize = this._onResize.bind(this);
     this._onPointerMove = this._onPointerMove.bind(this);
@@ -75,13 +81,11 @@ class Experience {
     const h = innerHeight;
     this.renderer.setPixelRatio(this.quality.pixelRatio());
     this.renderer.setSize(w, h);
-    this.particles.setPixelRatio(this.quality.pixelRatio());
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    // Keep the form clear of the text column on wide screens
-    // (scaled per-chapter by the rig's xFactor in the tick).
-    this._baseX = w > 980 ? 2.4 : 0;
-    this.scene.position.y = w > 980 ? 0 : 0.6;
+    // Sets sit in the empty stage column on wide screens, centred-and-raised
+    // above the copy on small ones (mirrors the CSS grid breakpoint).
+    this.stage.setLayout(w > 1180 ? 2.7 : 2.2, w <= 880);
   }
 
   _onResize() {
@@ -100,15 +104,6 @@ class Experience {
     const nx = (e.clientX / innerWidth) * 2 - 1;
     const ny = -((e.clientY / innerHeight) * 2 - 1);
     this.rig.setPointer(nx, ny);
-
-    // Project the cursor onto the z≈0 plane of the particle field so the
-    // repulsion happens where the cursor visually is.
-    const origin = this.camera.position.clone();
-    const dir = new Vector3(nx, ny, 0.5).unproject(this.camera).sub(origin).normalize();
-    const t = -origin.z / (dir.z || 1e-6);
-    if (t > 0) {
-      this._pointerWorld.copy(origin).addScaledVector(dir, t).sub(this.scene.position);
-    }
   }
 
   _tick(_time, deltaMS) {
@@ -117,22 +112,15 @@ class Experience {
     this.quality.tick(dt);
 
     const cp = clamp(glState.chapterProgress, 0, 8);
-    this.particles.setProgress(cp);
+    this.stage.setProgress(cp);
+    this.stage.update(this._time);
 
-    // Repulsion only earns its keep in the project-network chapters.
-    this._pointerTargetForce = cp > 5.5 ? 0.55 : 0;
-    this._pointerForce += (this._pointerTargetForce - this._pointerForce) * Math.min(1, dt * 4);
-
-    const velocityKick = clamp(Math.abs(glState.scrollVelocity), 0, 0.5) * 0.35;
-    this.particles.update(this._time, {
-      turbulence: 0.12 + velocityKick,
-      accentRGB: oklchToSRGB(0.8, 0.14, glState.accentH),
-      pointerWorld: this._pointerWorld,
-      pointerForce: this._pointerForce,
-    });
+    // Fast scrolling gives the whole stage a little cartoon lean, like wind.
+    const targetLean = clamp(glState.scrollVelocity, -0.6, 0.6) * -0.06;
+    this._lean = damp(this._lean, targetLean, 3, dt);
+    this.stage.group.rotation.z = this._lean;
 
     this.rig.update(cp, dt);
-    this.scene.position.x = this._baseX * this.rig.xFactor;
     this.renderer.render(this.scene, this.camera);
 
     if (!this._live) {
@@ -147,7 +135,7 @@ class Experience {
     removeEventListener('resize', this._onResize);
     removeEventListener('pointermove', this._onPointerMove);
     this.canvas.classList.remove('is-live');
-    this.particles.dispose();
+    this.stage.dispose();
     this.renderer.dispose();
     experience = null;
   }

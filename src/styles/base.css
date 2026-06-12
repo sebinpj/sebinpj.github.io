@@ -4,11 +4,11 @@
    into a slow glide and fights ScrollTrigger. Anchor clicks get smooth
    scrolling in JS instead. */
 html {
-  background: var(--ink-0);
+  background: var(--paper);
 }
 
-/* Background lives on html only — body must stay transparent so the
-   fixed canvas/nebula (negative z-index) remain visible beneath content. */
+/* Background lives on html only — body must stay transparent so fixed
+   layers keep their painting order predictable. */
 body {
   margin: 0;
   overflow-x: clip;
@@ -16,37 +16,41 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: var(--ink-0);
+  color: var(--paper);
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
-/* WebGL canvas sits behind everything; fades in once the first frame renders. */
+/* WebGL canvas floats ABOVE the tinted chapter bands (which would otherwise
+   paint over a negative-z fixed layer) but below all copy — dioramas read
+   as stickers placed on the page. pointer-events off so it never eats clicks. */
 #gl {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 2;
+  pointer-events: none;
   opacity: 0;
   transition: opacity 0.8s ease;
 }
 
 #gl.is-live { opacity: 1; }
 
-/* Static fallback atmosphere — visible until (or instead of) WebGL. */
-.nebula {
+/* Static fallback atmosphere — soft candy blobs on paper, always beneath
+   the bands; the page is fully usable without GL. */
+.paper-sky {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: -1;
   background:
-    radial-gradient(60rem 40rem at 78% 12%, oklch(0.22 0.05 var(--accent-h) / 0.5), transparent 65%),
-    radial-gradient(50rem 50rem at 12% 85%, oklch(0.19 0.04 280 / 0.55), transparent 70%),
-    var(--ink-0);
+    radial-gradient(46rem 30rem at 82% 8%, oklch(0.92 0.06 85 / 0.7), transparent 65%),
+    radial-gradient(40rem 36rem at 8% 28%, oklch(0.92 0.05 230 / 0.6), transparent 70%),
+    radial-gradient(50rem 40rem at 70% 90%, oklch(0.93 0.05 350 / 0.5), transparent 70%);
 }
 
 .skip-link {
@@ -55,9 +59,10 @@ body {
   left: 0.75rem;
   z-index: 100;
   padding: 0.5rem 1rem;
-  background: var(--ink-1);
-  border: 1px solid var(--line);
-  border-radius: 4px;
+  background: var(--card);
+  border: var(--border-sticker);
+  border-radius: 99px;
+  box-shadow: var(--shadow-sticker-sm);
   transform: translateY(-300%);
   transition: transform 0.2s var(--ease-out);
 }
@@ -73,42 +78,49 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.9rem var(--gutter);
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+  padding: 0.8rem var(--gutter);
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
 }
 
 .site-header.is-scrolled {
-  background: oklch(0.13 0.015 250 / 0.6);
+  background: oklch(0.97 0.018 90 / 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 0 oklch(0.31 0.05 280 / 0.12);
 }
 
 .site-header a { text-decoration: none; }
 
 .site-header__name {
   font-family: var(--font-display);
-  font-weight: 540;
-  font-size: 1.05rem;
+  font-variation-settings: 'SOFT' 70, 'WONK' 1;
+  font-weight: 620;
+  font-size: 1.1rem;
   letter-spacing: -0.01em;
+  color: var(--ink);
 }
 
 .site-header__cta {
   font-family: var(--font-mono);
   font-size: var(--size-small);
   letter-spacing: 0.04em;
-  color: var(--text-2);
-  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--card);
+  border: var(--border-sticker);
   border-radius: 99px;
-  padding: 0.4rem 1rem;
-  transition: color 0.3s ease, border-color 0.3s ease;
+  padding: 0.42rem 1.05rem;
+  box-shadow: var(--shadow-sticker-sm);
+  transition: transform 0.25s var(--ease-pop), box-shadow 0.25s var(--ease-pop), background-color 0.3s ease;
 }
 
 .site-header__cta:hover {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  background: var(--accent);
+  color: var(--paper);
+  transform: translate(0.05rem, 0.08rem) scale(1.03, 0.97);
+  box-shadow: 0.08rem 0.1rem 0 oklch(0.31 0.05 280 / 0.85);
 }
 
-/* Right-edge chapter progress dots (decorative). */
+/* Right-edge chapter progress dots (decorative candy). */
 .chapter-dots {
   position: fixed;
   right: 1.1rem;
@@ -117,22 +129,23 @@ body {
   z-index: 40;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.65rem;
 }
 
 .chapter-dots span {
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--text-3);
-  opacity: 0.45;
-  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+  background: var(--card);
+  border: 2px solid var(--ink);
+  opacity: 0.4;
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s var(--ease-pop);
 }
 
 .chapter-dots span.is-active {
   background: var(--accent);
   opacity: 1;
-  transform: scale(1.45);
+  transform: scale(1.4) rotate(8deg);
 }
 
 @media (max-width: 720px) {

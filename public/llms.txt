@@ -15,7 +15,7 @@ pgvector — built by his team of eleven).
 
 ## Contact
 
-- Email: me@sebins.in
-- LinkedIn: https://www.linkedin.com/in/sebin-p-johnson/
-- GitHub: https://github.com/sebinpj
-- Blog: https://blog.sebins.in
+- [Email](mailto:me@sebins.in): me@sebins.in
+- [LinkedIn](https://www.linkedin.com/in/sebin-p-johnson/): professional profile
+- [GitHub](https://github.com/sebinpj): open-source work and projects
+- [Blog](https://blog.sebins.in): writing on engineering and AI

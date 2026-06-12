@@ -1,18 +1,18 @@
 import { damp, lerp } from '../utils/math.js';
 
-// One spherical keyframe per chapter: radius, azimuth, elevation, and a small
-// lateral look-target shift. The rig eases through them as the story scrolls.
-// xf scales the lateral scene offset (1 = clear of the text column, 0 = centred).
+// One spherical keyframe per chapter: radius, azimuth, elevation. The swings
+// are gentle — the dioramas sit off-centre in the reserved stage column, so
+// big orbits would throw them off screen. Pointer parallax rides on top.
 const KEYFRAMES = [
-  { r: 10.5, az: 0.0, el: 0.04, xf: 1 }, //   00 hero — head-on signal cloud
-  { r: 9.0, az: 0.55, el: 0.18, xf: 1 }, //  01 origins — drift around the lattice
-  { r: 9.6, az: -0.5, el: 0.06, xf: 1 }, //  02 edstem — alongside the streams
-  { r: 8.6, az: 0.35, el: -0.06, xf: 1 }, // 03 psctalks — look up at the monolith
-  { r: 10.2, az: -0.55, el: 0.22, xf: 1 }, //04 willhire — above the merge
-  { r: 9.2, az: 0.18, el: 0.45, xf: 0.8 }, //05 magnit — looking down the ocean
-  { r: 8.8, az: -0.35, el: 0.12, xf: 1 }, // 06 maggi — inside the constellation
-  { r: 12.5, az: 0.45, el: 0.25, xf: 0.6 }, //07 projects — pull back, see the network
-  { r: 11.0, az: 0.0, el: 0.62, xf: 0 }, //  08 contact — centred calm halo
+  { r: 9.5, az: -0.1, el: 0.06 }, //  00 hero
+  { r: 9.0, az: 0.18, el: 0.12 }, //  01 origins
+  { r: 9.2, az: -0.16, el: 0.05 }, // 02 edstem
+  { r: 8.8, az: 0.14, el: 0.03 }, //  03 psctalks
+  { r: 9.4, az: -0.2, el: 0.14 }, //  04 willhire
+  { r: 9.6, az: 0.16, el: 0.22 }, //  05 magnit — slightly above the machine
+  { r: 9.0, az: -0.14, el: 0.06 }, // 06 maggi
+  { r: 10.5, az: 0.1, el: 0.16 }, //  07 projects — pulled back
+  { r: 9.8, az: 0.0, el: 0.1 }, //    08 contact
 ];
 
 export class CameraRig {
@@ -21,13 +21,12 @@ export class CameraRig {
     this.current = { ...KEYFRAMES[0] };
     this.parallax = { x: 0, y: 0 };
     this.parallaxTarget = { x: 0, y: 0 };
-    this.xFactor = 1;
   }
 
   setPointer(nx, ny) {
     // nx/ny in -1..1
-    this.parallaxTarget.x = nx * 0.035;
-    this.parallaxTarget.y = ny * 0.025;
+    this.parallaxTarget.x = nx * 0.04;
+    this.parallaxTarget.y = ny * 0.03;
   }
 
   update(chapterProgress, dt) {
@@ -39,17 +38,11 @@ export class CameraRig {
 
     const a = KEYFRAMES[ia];
     const b = KEYFRAMES[ib];
-    const target = {
-      r: lerp(a.r, b.r, e),
-      az: lerp(a.az, b.az, e),
-      el: lerp(a.el, b.el, e),
-    };
 
     // Damped pursuit — fast scroll never snaps the camera.
-    this.current.r = damp(this.current.r, target.r, 4, dt);
-    this.current.az = damp(this.current.az, target.az, 4, dt);
-    this.current.el = damp(this.current.el, target.el, 4, dt);
-    this.xFactor = damp(this.xFactor, lerp(a.xf, b.xf, e), 4, dt);
+    this.current.r = damp(this.current.r, lerp(a.r, b.r, e), 4, dt);
+    this.current.az = damp(this.current.az, lerp(a.az, b.az, e), 4, dt);
+    this.current.el = damp(this.current.el, lerp(a.el, b.el, e), 4, dt);
 
     this.parallax.x = damp(this.parallax.x, this.parallaxTarget.x, 5, dt);
     this.parallax.y = damp(this.parallax.y, this.parallaxTarget.y, 5, dt);
