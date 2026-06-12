@@ -1,7 +1,9 @@
 # Sebin P Johnson
 
-> Engineering Manager, AI at Magnit Global. Self-taught engineer with 9+ years
-> across full-stack, data infrastructure, and AI product engineering. Based in
+> Engineering Manager, AI at Magnit Global. Self-taught generalist architect
+> with 9+ years across legacy migrations, Kafka streaming, data pipelines,
+> mobile and web development, crawlers and automation, and AI in production.
+> If it runs on computers, he can build it, fix it, or scale it. Based in
 > Kerala, India, working remotely.
 
 This is a single-page portfolio told in reverse chronology — it opens at the
