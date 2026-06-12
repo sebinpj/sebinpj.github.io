@@ -51,9 +51,18 @@ export function buildHero() {
   // The machine and tree share its bob (same amp/speed/phase) so the
   // whole summit floats as one piece.
   const peak = new Group();
-  const rock = cone(1.6, 1.9, P.earth);
-  rock.rotation.x = Math.PI;
-  rock.position.y = -1.42;
+  // Jagged underside: faceted inverted cones (low radial counts read as
+  // rock facets) — a main mass with two tilted shards shouldering out.
+  const rock = cone(1.45, 1.6, P.earth, true, 6);
+  rock.rotation.set(Math.PI, 0.5, 0.08);
+  rock.position.y = -1.3;
+  const shardA = cone(0.75, 1.1, P.earth, true, 5);
+  shardA.rotation.set(Math.PI, 1.2, 0.35);
+  shardA.position.set(0.6, -1.0, 0.25);
+  const shardB = cone(0.55, 0.85, P.slate, true, 5);
+  shardB.rotation.set(Math.PI, -0.7, -0.4);
+  shardB.position.set(-0.65, -0.9, -0.2);
+  peak.add(shardA, shardB);
   const collar = cyl(1.5, 1.66, 0.42, P.pine);
   collar.position.y = -0.26;
   const lawn = cyl(1.38, 1.52, 0.2, P.leaf);
@@ -66,6 +75,49 @@ export function buildHero() {
     peak.add(tuft);
   }
   d.prop(peak, { delay: 0, span: 0.45, drop: 0.8, idle: bob(0.06, 0.7) });
+
+  // The crystal keel — the thing that keeps the island up. It rides the
+  // island bob so the air gap under the lowest tip never breathes, and
+  // pulses quieter than the machine core so the two don't compete.
+  const keel = octa(0.18, P.gold);
+  keel.position.set(0, -2.38, 0.45);
+  d.prop(keel, {
+    delay: 0.12,
+    span: 0.35,
+    drop: 0.4,
+    idle: (o, t, b) => {
+      o.position.y = b.py + isleBob(t);
+      o.rotation.y = t * 0.45;
+      const s = 1 + Math.sin(t * 1.3) * 0.1;
+      o.scale.set(b.sx * s, b.sy * s, b.sz * s);
+    },
+  });
+
+  // Loose rock bits where gravity gave up — each on its own bob phase.
+  const DEBRIS = [
+    [1.25, -1.9, 0.3, 0.13, 0],
+    [-1.1, -1.85, -0.2, 0.11, 2.1],
+    [-0.85, -2.15, 0.8, 0.09, 4.3],
+  ];
+  const debris = new Group();
+  DEBRIS.forEach(([x, y, z, r], i) => {
+    const bit = octa(r, i === 1 ? P.slate : P.earth);
+    bit.position.set(x, y, z);
+    debris.add(bit);
+  });
+  d.prop(debris, {
+    delay: 0.16,
+    span: 0.35,
+    drop: 0.5,
+    idle: (o, t) => {
+      DEBRIS.forEach(([, y, , , phase], i) => {
+        const bit = o.children[i];
+        bit.position.y = y + Math.sin(t * 0.5 + phase) * 0.12;
+        bit.rotation.y = t * 0.3 + phase;
+      });
+      o.position.y = isleBob(t);
+    },
+  });
 
   // The workshop machine: rice shell, vermillion roof lip, a porthole
   // showing the core, a chimney, and a gold delivery spout on the right.
@@ -249,7 +301,7 @@ export function buildHero() {
   const seaSpots = [
     [-1.75, -1.15, 0.5, 1.0, 0.4],
     [1.65, -1.45, 0.4, 0.85, 1.9],
-    [-0.55, -1.95, 0.7, 0.7, 3.3],
+    [-1.3, -2.0, 0.7, 0.7, 3.3],
     [1.0, -2.1, -0.3, 0.6, 5.1],
   ];
   seaSpots.forEach(([x, y, z, s, phase], i) => {
