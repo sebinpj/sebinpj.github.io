@@ -77,12 +77,19 @@
 .chapter--full .chapter__inner,
 .chapter--contact .chapter__inner { display: block; }
 
+/* Narrow desktops keep the two-column grid but the stage column gets thin —
+   pull the copy in so the dioramas (shrunk in GL at this band too) have air. */
+@media (min-width: 881px) and (max-width: 1180px) {
+  .chapter__inner { grid-template-columns: minmax(0, 34rem) minmax(12rem, 1fr); }
+  .chapter--flip .chapter__inner { grid-template-columns: minmax(12rem, 1fr) minmax(0, 34rem); }
+}
+
 @media (max-width: 880px) {
   .chapter__inner,
   .chapter--flip .chapter__inner { display: block; }
   .chapter--flip .chapter__copy { grid-column: auto; }
   .chapter__stage { min-height: clamp(10rem, 36vw, 15rem); }
-  /* Ground for the gate diorama below the colophon. */
+  /* Ground for the gate diorama below the social links. */
   .chapter--contact { padding-bottom: 14rem; }
 }
 
@@ -161,6 +168,11 @@
   font-size: var(--size-hero);
   max-width: 16ch;
   margin-bottom: var(--space-3);
+}
+
+@media (min-width: 881px) and (max-width: 1180px) {
+  .chapter--hero .chapter__inner { grid-template-columns: minmax(0, 36rem) minmax(12rem, 1fr); }
+  .hero__title { font-size: clamp(2.8rem, 1rem + 3.6vw, 3.6rem); }
 }
 
 .hero__sub {
@@ -447,6 +459,7 @@
 
 .chapter--contact .chapter__inner { width: min(100%, 56rem); }
 .chapter--contact .chapter__title { margin-inline: auto; }
+.chapter--contact .chapter__body { margin-inline: auto; }
 .chapter--contact .chapter__index { transform: rotate(1.5deg); }
 
 .chapter__title--contact { font-size: var(--size-hero); }
@@ -506,15 +519,6 @@
   color: var(--paper);
   transform: rotate(0deg) scale(1.06, 0.96);
 }
-
-.colophon {
-  color: var(--ink-faint);
-  border-top: 2px dashed var(--line);
-  padding-top: var(--space-3);
-}
-
-.colophon p { margin: 0; }
-.colophon__wink { color: var(--ink-soft); }
 
 /* ---------- Reveal primitives (GSAP toggles these) ---------- */
 

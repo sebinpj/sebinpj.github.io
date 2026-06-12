@@ -90,8 +90,10 @@ class Experience {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     // Sets sit in the empty stage column on wide screens, centred-and-raised
-    // above the copy on small ones (mirrors the CSS grid breakpoint).
-    this.stage.setLayout(w > 1180 ? 2.7 : 2.2, w <= 880);
+    // above the copy on small ones (mirrors the CSS grid breakpoint). Narrow
+    // desktops (881–1180) keep the two-column grid but have far less air
+    // beside the copy — shrink the sets so they stay clear of the titles.
+    this.stage.setLayout(w > 1180 ? 2.7 : 2.55, w <= 880, w > 1180 || w <= 880 ? 1 : 0.7);
   }
 
   _onResize() {

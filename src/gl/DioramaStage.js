@@ -10,12 +10,12 @@ const LAYOUT = [
   { x: 1, y: 0, s: 1, m: { y: -3.0, s: 0.36 } }, // 00 hero — mobile: tucked under the chip cloud; the summit clears as you scroll
   { x: -1, y: 0, s: 1 }, //   01 maggi — stage left
   { x: 1.12, y: 0, s: 0.85, m: { x: 1.0, y: -1.4, s: 0.38 } }, // 02 magnit — wide machine, nudged clear of the copy; mobile: beside the stat stack
-  { x: -1, y: 0, s: 1 }, //   03 willhire
-  { x: 1, y: 0, s: 1, m: { y: -1.95, s: 0.5 } }, // 04 psctalks — the pagoda is tall; lift and shrink so the finial clears
-  { x: -1, y: 0, s: 1, m: { y: -3.3, s: 0.38 } }, // 05 edstem — long copy on mobile; tuck the scroll below the chips
+  { x: -1, y: 0, s: 1, m: { y: -3.1, s: 0.45 } }, // 03 willhire — mobile: below the closing line, clear of the merge chips
+  { x: 1, y: 0, s: 1, m: { y: -2.6, s: 0.45 } }, // 04 psctalks — the pagoda is tall; drop and shrink so the finial clears the copy
+  { x: -1, y: 0, s: 1, m: { y: -3.8, s: 0.36 } }, // 05 edstem — long copy on mobile; tuck the scroll below the chips
   { x: 1, y: 0, s: 1, m: { y: -3.2, s: 0.45 } }, // 06 origins — mobile: the little stack sits under the closing line
-  { x: 1.3, y: 1.5, s: 0.6, m: { y: 3.1, s: 0.42 } }, // 07 projects — small, peeking over the cards; mobile: perched on the cloud edge
-  { x: 1.18, y: 0.2, s: 0.85, m: { x: -1.2, y: -2.4, s: 0.5 } }, // 08 contact — the gate is wide; clear of the centred sign-off. Mobile: planted by the colophon
+  { x: 1.3, y: 1.5, s: 0.6, m: { x: 0.9, y: 3.9, s: 0.36 } }, // 07 projects — small, peeking over the cards; mobile: tucked top-right above the title
+  { x: 1.25, y: -1.6, s: 0.85, m: { x: -1.2, y: -2.4, s: 0.5 } }, // 08 contact — planted at ground level, right of the centred sign-off. Mobile: below the links
 ];
 
 // The outgoing set packs up over the first 45% of a transition, the next one
@@ -27,7 +27,7 @@ export class DioramaStage {
   constructor() {
     this.group = new Group();
     this._cache = new Array(BUILDERS.length).fill(null);
-    this._layout = { baseX: 2.6, mobile: false };
+    this._layout = { baseX: 2.6, mobile: false, k: 1 };
     this._progress = -1;
   }
 
@@ -44,19 +44,19 @@ export class DioramaStage {
     const d = this._cache[i];
     if (!d) return;
     const { x, y, s, m } = LAYOUT[i];
-    const { baseX, mobile } = this._layout;
+    const { baseX, mobile, k } = this._layout;
     if (mobile) {
       // The stage zone sits below the copy on small screens — drop and shrink.
       d.position.set(m?.x ?? 0, m?.y ?? -2.2 + y * 0.35, 0);
       d.scale.setScalar(m?.s ?? 0.55 * s);
     } else {
       d.position.set(baseX * x, y, 0);
-      d.scale.setScalar(s);
+      d.scale.setScalar(s * k);
     }
   }
 
-  setLayout(baseX, mobile) {
-    this._layout = { baseX, mobile };
+  setLayout(baseX, mobile, k = 1) {
+    this._layout = { baseX, mobile, k };
     for (let i = 0; i < this._cache.length; i += 1) this._place(i);
   }
 

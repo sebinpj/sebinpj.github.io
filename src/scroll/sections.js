@@ -20,7 +20,6 @@ const POP_TARGETS = [
   '.chip',
   '.project-card',
   '.contact__links li',
-  '.colophon',
 ];
 
 function heroIntro() {
@@ -54,7 +53,13 @@ function chapterReveals() {
     const text = section.querySelectorAll(TEXT_TARGETS.join(','));
     const pops = section.querySelectorAll(POP_TARGETS.join(','));
     const tl = gsap.timeline({
-      scrollTrigger: { trigger: section, start: 'top 72%' },
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 72%',
+        // Landing mid-page (anchor jump, scroll restoration) means no onEnter
+        // crossing ever happens — play anything we're already past or inside.
+        onRefresh: (self) => self.progress > 0 && self.animation.play(),
+      },
       defaults: { duration: 0.7 },
     });
     if (text.length) {
@@ -95,7 +100,12 @@ function sealStamps() {
   gsap.utils.toArray('.seal').forEach((seal) => {
     gsap
       .timeline({
-        scrollTrigger: { trigger: seal.closest('.chapter'), start: 'top 72%', once: true },
+        scrollTrigger: {
+          trigger: seal.closest('.chapter'),
+          start: 'top 72%',
+          once: true,
+          onRefresh: (self) => self.progress > 0 && self.animation.play(),
+        },
       })
       // 0.45s in: the badge sticker has mostly landed before the chop hits it.
       .from(seal, { scale: 2.2, rotation: -15, autoAlpha: 0, duration: 0.32, ease: 'power4.in' }, 0.45)
