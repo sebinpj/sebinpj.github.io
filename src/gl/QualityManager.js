@@ -19,6 +19,7 @@ export class QualityManager {
     // Rolling FPS watchdog: sustained slow frames step the pixel ratio down
     // before they ever read as jank.
     this._slowWindows = 0;
+    this._fastWindows = 0;
     this._frameCount = 0;
     this._elapsed = 0;
     this.dprScale = 1;
@@ -39,15 +40,26 @@ export class QualityManager {
     if (this._elapsed >= 1) {
       const avgFrame = this._elapsed / this._frameCount;
       this._slowWindows = avgFrame > 0.022 ? this._slowWindows + 1 : 0;
+      // Comfortable headroom (~55+ fps) earns back resolution lost to a
+      // transient stall — otherwise one busy moment (tab switch, GC, an OS
+      // hiccup) leaves the canvas soft for the whole session. The recovery
+      // bar (10 calm windows vs 3 slow ones) is deliberately asymmetric so
+      // a genuinely weak GPU doesn't oscillate between sharp and slow.
+      this._fastWindows = avgFrame < 0.018 ? this._fastWindows + 1 : 0;
       this._elapsed = 0;
       this._frameCount = 0;
 
       if (this._slowWindows >= 3) {
         this._slowWindows = 0;
+        this._fastWindows = 0;
         if (this.dprScale > 0.55) {
           this.dprScale = Math.max(0.5, this.dprScale - 0.25);
           this.onDemote?.();
         }
+      } else if (this._fastWindows >= 10 && this.dprScale < 1) {
+        this._fastWindows = 0;
+        this.dprScale = Math.min(1, this.dprScale + 0.25);
+        this.onDemote?.(); // same hook: re-applies renderer size
       }
     }
   }

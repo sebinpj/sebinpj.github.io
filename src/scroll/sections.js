@@ -22,30 +22,58 @@ const POP_TARGETS = [
   '.contact__links li',
 ];
 
+// Reveal tweens are created at boot but play later, and GSAP re-reads a
+// from() tween's implicit end values from the DOM at play time — by which
+// point the hidden start state (scale ~0) is already inlined, so every pop
+// "animated" 0 → 0 and just snapped in at clearProps. Explicit fromTo()
+// values are immune; the stickers' CSS resting tilts are captured up front
+// so the tween can land exactly back on them.
+function popIn(targets, extra = {}) {
+  const list = gsap.utils.toArray(targets);
+  const tilts = list.map((el) => gsap.getProperty(el, 'rotation'));
+  return [
+    list,
+    { scale: 0.01, autoAlpha: 0, rotation: (i) => tilts[i] + (i % 2 ? 7 : -7) },
+    {
+      scale: 1,
+      autoAlpha: 1,
+      rotation: (i) => tilts[i],
+      transformOrigin: '50% 60%',
+      ease: EASE_POP,
+      immediateRender: true /* hide at boot, not at trigger time */,
+      force3D: false /* layer snapshots blur the sticker text while scaling */,
+      clearProps: 'transform',
+      ...extra,
+    },
+  ];
+}
+
 function heroIntro() {
   const title = document.getElementById('hero-title');
   const split = SplitText.create(title, { type: 'lines', mask: 'lines' });
 
   gsap
     .timeline()
-    .from('#hero-kicker', { y: 16, autoAlpha: 0, duration: 0.7, ease: EASE_TEXT }, 0.1)
-    .from(split.lines, { yPercent: 115, duration: 0.9, stagger: 0.09, ease: 'back.out(1.2)' }, 0.2)
-    .from('.hero__sub', { y: 20, autoAlpha: 0, duration: 0.7, ease: EASE_TEXT }, 0.7)
-    .from(
-      '.chip-row--hero .chip',
-      {
-        scale: 0,
-        autoAlpha: 0,
-        rotation: (i) => (i % 2 ? 7 : -7),
-        transformOrigin: '50% 60%',
-        duration: 0.6,
-        ease: EASE_POP,
-        stagger: 0.045,
-        clearProps: 'transform',
-      },
-      0.85,
+    .fromTo(
+      '#hero-kicker',
+      { y: 16, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 0.7, ease: EASE_TEXT },
+      0.1,
     )
-    .from('.hero__scroll-cue', { scale: 0, rotation: -6, autoAlpha: 0, duration: 0.6, ease: EASE_POP }, 1.35);
+    .fromTo(
+      split.lines,
+      { yPercent: 115 },
+      { yPercent: 0, duration: 0.9, stagger: 0.09, ease: 'back.out(1.2)' },
+      0.2,
+    )
+    .fromTo(
+      '.hero__sub',
+      { y: 20, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 0.7, ease: EASE_TEXT },
+      0.7,
+    )
+    .fromTo(...popIn('.chip-row--hero .chip', { duration: 0.6, stagger: 0.045 }), 0.85)
+    .fromTo(...popIn('.hero__scroll-cue', { duration: 0.6 }), 1.35);
 }
 
 function chapterReveals() {
@@ -63,32 +91,31 @@ function chapterReveals() {
       defaults: { duration: 0.7 },
     });
     if (text.length) {
-      tl.from(text, { y: 30, autoAlpha: 0, ease: EASE_TEXT, stagger: 0.09 }, 0);
+      tl.fromTo(
+        text,
+        { y: 30, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, ease: EASE_TEXT, stagger: 0.09, immediateRender: true },
+        0,
+      );
     }
     // Brush wipe: the title paints in left-to-right on top of its y-slide.
     const title = section.querySelector('.chapter__title');
     if (title) {
-      tl.from(
+      tl.fromTo(
         title,
-        { clipPath: 'inset(0 100% 0 0)', duration: 0.9, ease: 'power3.out', clearProps: 'clipPath' },
+        { clipPath: 'inset(0 100% 0 0)' },
+        {
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 0.9,
+          ease: 'power3.out',
+          immediateRender: true,
+          clearProps: 'clipPath',
+        },
         0,
       );
     }
     if (pops.length) {
-      tl.from(
-        pops,
-        {
-          scale: 0,
-          autoAlpha: 0,
-          rotation: (i) => (i % 2 ? 7 : -7),
-          transformOrigin: '50% 60%',
-          ease: EASE_POP,
-          stagger: 0.05,
-          /* stickers keep their CSS resting tilt + hover transforms */
-          clearProps: 'transform',
-        },
-        0.08,
-      );
+      tl.fromTo(...popIn(pops, { stagger: 0.05 }), 0.08);
     }
   });
 }
@@ -98,6 +125,7 @@ function chapterReveals() {
 // so these never reverse.
 function sealStamps() {
   gsap.utils.toArray('.seal').forEach((seal) => {
+    const tilt = gsap.getProperty(seal, 'rotation');
     gsap
       .timeline({
         scrollTrigger: {
@@ -108,9 +136,22 @@ function sealStamps() {
         },
       })
       // 0.45s in: the badge sticker has mostly landed before the chop hits it.
-      .from(seal, { scale: 2.2, rotation: -15, autoAlpha: 0, duration: 0.32, ease: 'power4.in' }, 0.45)
-      .to(seal, { scale: 0.9, duration: 0.1, ease: 'power2.out' })
-      .to(seal, { scale: 1, duration: 0.35, ease: EASE_POP, clearProps: 'transform' });
+      .fromTo(
+        seal,
+        { scale: 2.2, rotation: tilt - 12, autoAlpha: 0 },
+        {
+          scale: 1,
+          rotation: tilt,
+          autoAlpha: 1,
+          duration: 0.32,
+          ease: 'power4.in',
+          immediateRender: true,
+          force3D: false,
+        },
+        0.45,
+      )
+      .to(seal, { scale: 0.9, duration: 0.1, ease: 'power2.out', force3D: false })
+      .to(seal, { scale: 1, duration: 0.35, ease: EASE_POP, force3D: false, clearProps: 'transform' });
   });
 }
 
