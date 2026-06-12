@@ -11,6 +11,7 @@ import {
   ExtrudeGeometry,
   Group,
   Mesh,
+  MeshBasicMaterial,
   OctahedronGeometry,
   Shape,
   SphereGeometry,
@@ -121,10 +122,127 @@ export function phone(w, h, screenColor, rows = []) {
   return g;
 }
 
+// A summit pavilion: stone plinth, vermillion pillars, two stacked pyramid
+// roofs (4-segment cones turned 45°) and a gold finial. Open on all sides so
+// whatever sits inside stays visible.
+export function pavilion(scale = 1) {
+  const g = new Group();
+  const plinth = box(1.45, 0.14, 1.45, PALETTE.earth);
+  g.add(plinth);
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      const pillar = cyl(0.055, 0.055, 0.95, PALETTE.vermillion, false, 10);
+      pillar.position.set(sx * 0.58, 0.54, sz * 0.58);
+      g.add(pillar);
+    }
+  }
+  const eave = cone(1.3, 0.52, PALETTE.vermillion, true, 4);
+  eave.rotation.y = Math.PI / 4;
+  eave.position.y = 1.22;
+  const crest = cone(0.78, 0.4, PALETTE.vermillion, true, 4);
+  crest.rotation.y = Math.PI / 4;
+  crest.position.y = 1.62;
+  const finial = octa(0.12, PALETTE.gold);
+  finial.position.y = 1.9;
+  g.add(eave, crest, finial);
+  g.scale.setScalar(scale);
+  return g;
+}
+
+// A paper lantern: squashed sphere body, gold caps, a little tassel.
+export function lantern(scale = 1, color = PALETTE.vermillion) {
+  const g = new Group();
+  const body = sphere(0.3, color, true, 16);
+  body.scale.y = 1.12;
+  const capTop = cyl(0.13, 0.17, 0.1, PALETTE.gold);
+  capTop.position.y = 0.34;
+  const capBottom = cyl(0.17, 0.13, 0.1, PALETTE.gold);
+  capBottom.position.y = -0.34;
+  const tassel = cyl(0.022, 0.022, 0.24, PALETTE.gold, false, 8);
+  tassel.position.y = -0.52;
+  g.add(body, capTop, capBottom, tassel);
+  g.scale.setScalar(scale);
+  return g;
+}
+
+// An open scroll: rice paper between two rollers with gold end-knobs,
+// optional faint content rows (same row recipe as the phone screen).
+export function scrollProp(scale = 1, rows = []) {
+  const g = new Group();
+  const paper = box(1.7, 1.05, 0.06, PALETTE.rice);
+  g.add(paper);
+  for (const sx of [-1, 1]) {
+    const roller = cyl(0.09, 0.09, 1.25, PALETTE.earth, true, 12);
+    roller.position.set(sx * 0.9, 0, 0);
+    g.add(roller);
+    for (const sy of [-1, 1]) {
+      const knob = sphere(0.11, PALETTE.gold, true, 12);
+      knob.position.set(sx * 0.9, sy * 0.66, 0);
+      g.add(knob);
+    }
+  }
+  rows.forEach(([rw, rh, color, x, y]) => {
+    const row = box(rw, rh, 0.03, color, false);
+    row.position.set(x, y, 0.06);
+    g.add(row);
+  });
+  g.scale.setScalar(scale);
+  return g;
+}
+
+// A mountain gate: two stone pillars under stacked vermillion lintels,
+// crowned with a small gold roof peak.
+export function gate(scale = 1) {
+  const g = new Group();
+  for (const sx of [-1, 1]) {
+    const pillar = box(0.24, 1.75, 0.24, PALETTE.earth);
+    pillar.position.set(sx * 0.8, 0.875, 0);
+    g.add(pillar);
+  }
+  const lower = box(2.05, 0.18, 0.3, PALETTE.vermillion);
+  lower.position.y = 1.78;
+  const upper = box(2.35, 0.2, 0.34, PALETTE.vermillion);
+  upper.position.y = 2.06;
+  const peak = cone(0.22, 0.2, PALETTE.gold, true, 4);
+  peak.rotation.y = Math.PI / 4;
+  peak.position.y = 2.26;
+  g.add(lower, upper, peak);
+  g.scale.setScalar(scale);
+  return g;
+}
+
+// A wide translucent mist bank — no outline, additive-free, one shared
+// material exposed on userData so the atmosphere can fade it per frame.
+export function mistBand(scale = 1, opacity = 0.45) {
+  const g = new Group();
+  const mat = new MeshBasicMaterial({
+    color: PALETTE.mist,
+    transparent: true,
+    opacity,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  const lobes = [
+    [0, 0, 0, 1],
+    [1.1, 0.08, 0.2, 0.72],
+    [-1.05, 0.05, -0.15, 0.8],
+    [2.0, -0.05, 0.1, 0.5],
+  ];
+  for (const [x, y, z, s] of lobes) {
+    const lobe = new Mesh(new SphereGeometry(0.55, 14, 8), mat);
+    lobe.scale.set(2.1 * s, 0.5 * s, 1.0 * s);
+    lobe.position.set(x, y, z);
+    g.add(lobe);
+  }
+  g.userData.material = mat;
+  g.scale.setScalar(scale);
+  return g;
+}
+
 // A stylized palm — Kerala's cameo.
 export function palm(scale = 1) {
   const g = new Group();
-  const trunk = cyl(0.07, 0.11, 1.1, PALETTE.brown);
+  const trunk = cyl(0.07, 0.11, 1.1, PALETTE.earth);
   trunk.rotation.z = -0.12;
   trunk.position.y = 0.55;
   g.add(trunk);

@@ -3,16 +3,18 @@ import { damp, lerp } from '../utils/math.js';
 // One spherical keyframe per chapter: radius, azimuth, elevation. The swings
 // are gentle — the dioramas sit off-centre in the reserved stage column, so
 // big orbits would throw them off screen. Pointer parallax rides on top.
+// Elevation descends with the story — the camera starts high above the
+// summit's cloud sea and settles to ground level by origins.
 const KEYFRAMES = [
-  { r: 9.5, az: -0.1, el: 0.06 }, //  00 hero
-  { r: 9.0, az: 0.18, el: 0.12 }, //  01 origins
-  { r: 9.2, az: -0.16, el: 0.05 }, // 02 edstem
-  { r: 8.8, az: 0.14, el: 0.03 }, //  03 psctalks
-  { r: 9.4, az: -0.2, el: 0.14 }, //  04 willhire
-  { r: 9.6, az: 0.16, el: 0.22 }, //  05 magnit — slightly above the machine
-  { r: 9.0, az: -0.14, el: 0.06 }, // 06 maggi
-  { r: 10.5, az: 0.1, el: 0.16 }, //  07 projects — pulled back
-  { r: 9.8, az: 0.0, el: 0.1 }, //    08 contact
+  { r: 9.5, az: -0.1, el: 0.18 }, //  00 hero — the summit
+  { r: 9.0, az: 0.18, el: 0.13 }, //  01 maggi
+  { r: 9.6, az: -0.16, el: 0.2 }, //  02 magnit — slightly above the machine
+  { r: 9.4, az: 0.14, el: 0.1 }, //   03 willhire
+  { r: 8.8, az: -0.2, el: 0.08 }, //  04 psctalks
+  { r: 9.2, az: 0.16, el: 0.05 }, //  05 edstem
+  { r: 9.0, az: -0.14, el: 0.02 }, // 06 origins — ground level
+  { r: 10.5, az: 0.1, el: 0.08 }, //  07 projects — pulled back
+  { r: 9.8, az: 0.0, el: 0.05 }, //   08 contact
 ];
 
 export class CameraRig {

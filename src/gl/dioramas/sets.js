@@ -14,11 +14,14 @@ import {
   cone,
   cyl,
   eyes,
+  gate,
+  lantern,
   octa,
   palm,
+  pavilion,
   phone,
+  scrollProp,
   sphere,
-  star,
   torus,
 } from './props.js';
 
@@ -32,28 +35,40 @@ const sway = (amp = 0.05, speed = 1, phase = 0) => (o, t, b) => {
   o.rotation.z = b.rz + Math.sin(t * speed + phase) * amp;
 };
 
-// 00 · hero — a little floating island where the work happens.
+// 00 · hero — the summit: a pavilion on a floating peak above the cloud
+// sea. Deliberately the busiest set on the page; everything below it
+// thins out as the story descends.
 export function buildHero() {
   const d = new Diorama();
-  d.prop(blobShadow(1.9, -2.1), { delay: 0, span: 0.3, drop: 0 });
+  d.prop(blobShadow(1.9, -2.6), { delay: 0, span: 0.3, drop: 0 });
 
-  const island = new Group();
-  const rock = cone(1.55, 1.5, P.brown);
+  // The peak itself — inverted stone cone, a pine collar, a grassy crown.
+  // The pavilion, desk and tree share its bob (same amp/speed/phase) so the
+  // whole summit floats as one piece.
+  const peak = new Group();
+  const rock = cone(1.6, 1.9, P.earth);
   rock.rotation.x = Math.PI;
-  rock.position.y = -1.0;
-  const grass = cyl(1.6, 1.5, 0.42, P.leaf);
-  grass.position.y = -0.18;
-  island.add(rock, grass);
+  rock.position.y = -1.42;
+  const collar = cyl(1.5, 1.66, 0.42, P.pine);
+  collar.position.y = -0.26;
+  const lawn = cyl(1.38, 1.52, 0.2, P.leaf);
+  lawn.position.y = 0.05;
+  peak.add(rock, collar, lawn);
   for (let i = 0; i < 4; i += 1) {
-    const tuft = sphere(0.16, P.mint, true, 10);
-    tuft.position.set(Math.cos(i * 2.3) * 1.15, 0.05, Math.sin(i * 2.3) * 1.05);
+    const tuft = sphere(0.15, P.leaf, true, 10);
+    tuft.position.set(Math.cos(i * 2.3) * 1.12, 0.18, Math.sin(i * 2.3) * 1.0);
     tuft.scale.y = 0.6;
-    island.add(tuft);
+    peak.add(tuft);
   }
-  d.prop(island, { delay: 0, span: 0.45, drop: 0.8, idle: bob(0.06, 0.7) });
+  d.prop(peak, { delay: 0, span: 0.45, drop: 0.8, idle: bob(0.06, 0.7) });
 
+  const hall = pavilion();
+  hall.position.set(0.12, 0.22, -0.1);
+  d.prop(hall, { delay: 0.18, span: 0.45, drop: 0.6, idle: bob(0.06, 0.7) });
+
+  // The desk sits inside the pavilion — the work happens at the summit.
   const desk = new Group();
-  const top = box(1.05, 0.09, 0.65, P.brown);
+  const top = box(1.05, 0.09, 0.65, P.earth);
   for (const sx of [-1, 1]) {
     const leg = box(0.07, 0.42, 0.07, P.ink, false);
     leg.position.set(sx * 0.42, -0.25, 0);
@@ -61,45 +76,83 @@ export function buildHero() {
   }
   const base = box(0.52, 0.05, 0.38, P.slate);
   base.position.set(0.02, 0.07, 0.05);
-  const screen = box(0.52, 0.38, 0.05, P.sky);
+  const screen = box(0.52, 0.38, 0.05, P.azure);
   screen.position.set(0.02, 0.26, -0.1);
   screen.rotation.x = -0.18;
   desk.add(top, base, screen);
-  desk.position.set(0.25, 0.45, 0.15);
-  d.prop(desk, { delay: 0.2, span: 0.4, drop: 0.6 });
+  desk.scale.setScalar(0.7);
+  desk.position.set(0.12, 0.61, -0.05);
+  d.prop(desk, { delay: 0.3, span: 0.4, drop: 0.5, idle: bob(0.06, 0.7) });
 
-  const tree = palm(0.85);
-  tree.position.set(-1.05, -0.05, -0.35);
-  d.prop(tree, { delay: 0.3, span: 0.4, drop: 0.5, idle: sway(0.04, 0.9) });
+  const pine = new Group();
+  const trunk = cyl(0.06, 0.09, 0.4, P.earth, false, 10);
+  const tierA = cone(0.4, 0.55, P.pine);
+  tierA.position.y = 0.42;
+  const tierB = cone(0.27, 0.4, P.pine);
+  tierB.position.y = 0.8;
+  pine.add(trunk, tierA, tierB);
+  pine.position.set(-1.08, 0.35, -0.3);
+  d.prop(pine, { delay: 0.38, span: 0.4, drop: 0.5, idle: bob(0.06, 0.7) });
+
+  const lamp = lantern(0.55);
+  lamp.position.set(1.08, 0.85, 0.45);
+  d.prop(lamp, { delay: 0.5, span: 0.35, drop: 0.4, idle: bob(0.07, 1.1, 2.3) });
 
   const sun = new Group();
-  sun.add(sphere(0.4, P.sunflower));
+  sun.add(sphere(0.4, P.gold));
   for (let i = 0; i < 8; i += 1) {
-    const ray = cone(0.07, 0.26, P.sunflower, false);
+    const ray = cone(0.07, 0.26, P.gold, false);
     const a = (i / 8) * Math.PI * 2;
     ray.position.set(Math.cos(a) * 0.62, Math.sin(a) * 0.62, 0);
     ray.rotation.z = a - Math.PI / 2;
     sun.add(ray);
   }
-  sun.position.set(1.75, 2.0, -0.7);
+  sun.position.set(1.85, 2.5, -0.8);
   d.prop(sun, { delay: 0.45, span: 0.4, drop: 0.3, idle: spin(0.25, 'z') });
 
-  const cloudA = cloud(0.9);
-  cloudA.position.set(-1.8, 1.5, -0.6);
-  d.prop(cloudA, { delay: 0.55, span: 0.4, drop: 0.25, idle: bob(0.05, 0.55, 1.7) });
-  const cloudB = cloud(0.6);
-  cloudB.position.set(1.1, 2.6, 0.3);
-  d.prop(cloudB, { delay: 0.65, span: 0.35, drop: 0.25, idle: bob(0.05, 0.7, 4.1) });
+  // The cloud sea the peak floats above — flattened puffs hugging the rock.
+  const seaSpots = [
+    [-1.75, -1.15, 0.5, 1.0, 0.4],
+    [1.65, -1.45, 0.4, 0.85, 1.9],
+    [-0.55, -1.95, 0.7, 0.7, 3.3],
+    [1.0, -2.1, -0.3, 0.6, 5.1],
+  ];
+  seaSpots.forEach(([x, y, z, s, phase], i) => {
+    const puff = cloud(s);
+    puff.scale.y = s * 0.55;
+    puff.position.set(x, y, z);
+    d.prop(puff, { delay: 0.55 + i * 0.07, span: 0.4, drop: 0.25, idle: bob(0.04, 0.5, phase) });
+  });
+
+  const cloudA = cloud(0.8);
+  cloudA.position.set(-1.95, 1.7, -0.6);
+  d.prop(cloudA, { delay: 0.62, span: 0.4, drop: 0.25, idle: bob(0.05, 0.55, 1.7) });
+  const cloudB = cloud(0.55);
+  cloudB.position.set(1.05, 2.85, 0.3);
+  d.prop(cloudB, { delay: 0.7, span: 0.35, drop: 0.25, idle: bob(0.05, 0.7, 4.1) });
+
+  // Qi wisps circling the whole summit.
+  const wisps = new Group();
+  for (let i = 0; i < 5; i += 1) {
+    const w = octa(0.12, i % 2 ? P.jade : P.gold);
+    const a = (i / 5) * Math.PI * 2;
+    w.position.set(Math.cos(a) * 2.15, 0.45 + Math.sin(a * 2) * 0.7, Math.sin(a) * 1.4);
+    wisps.add(w);
+  }
+  d.prop(wisps, { delay: 0.78, span: 0.4, drop: 0.3, idle: spin(0.3) });
 
   return d;
 }
 
-// 01 · origins — a stack of borrowed knowledge and one bright idea.
+// 06 · origins — the sparsest set on the page, on purpose: a stack of
+// borrowed books, one small lantern lit above them, the palm, a single
+// sparkle. The emptiness is the design — everything above was climbed
+// from here.
 export function buildOrigins() {
   const d = new Diorama();
   d.prop(blobShadow(1.7, -1.6), { delay: 0, span: 0.3, drop: 0 });
 
-  const colors = [P.coral, P.sky, P.sunflower, P.mint];
+  const colors = [P.earth, P.rice, P.slate, P.earth];
   colors.forEach((c, i) => {
     const b = box(1.65 - i * 0.12, 0.26, 1.05, c);
     b.position.y = -1.25 + i * 0.27;
@@ -107,53 +160,43 @@ export function buildOrigins() {
     d.prop(b, { delay: 0.05 + i * 0.08, span: 0.35, drop: 0.5 });
   });
 
-  const bulb = new Group();
-  const glass = sphere(0.42, P.sunflower);
-  const socket = cyl(0.16, 0.19, 0.24, P.slate);
-  socket.position.y = -0.5;
-  bulb.add(glass, socket);
-  for (let i = 0; i < 5; i += 1) {
-    const sparkRay = cone(0.05, 0.2, P.sunflower, false);
-    const a = (i / 5) * Math.PI * 2 + 0.3;
-    sparkRay.position.set(Math.cos(a) * 0.66, Math.sin(a) * 0.66 + 0.05, 0);
-    sparkRay.rotation.z = a - Math.PI / 2;
-    bulb.add(sparkRay);
-  }
-  bulb.position.set(0.1, 0.65, 0);
-  d.prop(bulb, { delay: 0.42, span: 0.4, drop: 0.45, idle: bob(0.08, 0.9) });
+  const spark = lantern(0.5);
+  spark.position.set(0.1, 0.55, 0);
+  d.prop(spark, { delay: 0.42, span: 0.4, drop: 0.45, idle: bob(0.08, 0.9) });
 
   const tree = palm(0.8);
   tree.position.set(-1.7, -1.55, -0.5);
   d.prop(tree, { delay: 0.55, span: 0.35, drop: 0.4, idle: sway(0.05, 0.8, 2) });
 
-  const sparkle = octa(0.14, P.coral);
+  const sparkle = octa(0.14, P.gold);
   sparkle.position.set(1.45, 0.6, 0.2);
   d.prop(sparkle, { delay: 0.7, span: 0.3, drop: 0.2, idle: spin(0.9) });
 
   return d;
 }
 
-// 02 · edstem — messages orbiting the phone they were never meant to leave.
+// 05 · edstem — the apprentice years: an open scroll, messages still
+// circling it. Fewer pieces than the chapters above — the gradient at work.
 export function buildEdstem() {
   const d = new Diorama();
   d.prop(blobShadow(1.6, -1.8), { delay: 0, span: 0.3, drop: 0 });
 
-  const ph = phone(1.15, 2.3, P.cream, [
-    [0.62, 0.2, P.mint, -0.12, 0.55],
-    [0.5, 0.18, P.sky, 0.18, 0.15],
-    [0.62, 0.2, P.mint, -0.12, -0.25],
-    [0.42, 0.18, P.sky, 0.2, -0.62],
+  const sc = scrollProp(1.15, [
+    [0.95, 0.14, P.slate, -0.12, 0.3],
+    [0.7, 0.13, P.jade, 0.08, 0.02],
+    [0.88, 0.13, P.slate, -0.08, -0.28],
   ]);
-  ph.position.y = -0.4;
-  ph.rotation.y = -0.12;
-  d.prop(ph, { delay: 0.05, span: 0.45, drop: 0.7, idle: bob(0.05, 0.8) });
+  sc.position.y = -0.35;
+  sc.rotation.y = -0.14;
+  sc.rotation.z = 0.04;
+  d.prop(sc, { delay: 0.05, span: 0.45, drop: 0.7, idle: bob(0.05, 0.8) });
 
   const orbit = new Group();
-  const colors = [P.mint, P.white, P.sunflower, P.white];
-  for (let i = 0; i < 4; i += 1) {
+  const colors = [P.jade, P.white, P.gold];
+  for (let i = 0; i < 3; i += 1) {
     const b = chatBubble(colors[i]);
-    const a = (i / 4) * Math.PI * 2;
-    b.position.set(Math.cos(a) * 1.55, 0.25 + Math.sin(a * 2) * 0.45, Math.sin(a) * 1.05);
+    const a = (i / 3) * Math.PI * 2;
+    b.position.set(Math.cos(a) * 1.5, 0.25 + Math.sin(a * 2) * 0.45, Math.sin(a) * 1.0);
     b.rotation.y = -a * 0.4;
     orbit.add(b);
   }
@@ -163,81 +206,88 @@ export function buildEdstem() {
   return d;
 }
 
-// 03 · psctalks — the little app that reached half a million pockets.
+// 04 · psctalks — a three-tier pagoda, lanterns rising past it like the
+// download counter on its way to half a million.
 export function buildPsctalks() {
   const d = new Diorama();
   d.prop(blobShadow(1.7, -2.0), { delay: 0, span: 0.3, drop: 0 });
 
-  const ph = phone(1.35, 2.7, P.cream, [
-    [0.9, 0.34, P.grape, 0, 0.78],
-    [0.95, 0.2, P.sunflower, 0, 0.3],
-    [0.95, 0.2, P.sunflower, 0, -0.05],
-    [0.95, 0.2, P.sunflower, 0, -0.4],
-    [0.6, 0.26, P.mint, -0.14, -0.85],
-  ]);
-  ph.position.y = -0.45;
-  ph.rotation.y = 0.1;
-  d.prop(ph, { delay: 0.05, span: 0.45, drop: 0.8, idle: bob(0.04, 0.7) });
+  const pagoda = new Group();
+  const plinth = cyl(1.0, 1.12, 0.22, P.earth);
+  plinth.position.y = -1.55;
+  pagoda.add(plinth);
+  for (let i = 0; i < 3; i += 1) {
+    const body = cyl(0.6 - i * 0.12, 0.66 - i * 0.12, 0.55, P.rice);
+    body.position.y = -1.17 + i * 0.93;
+    const eave = cone(1.02 - i * 0.2, 0.42, P.vermillion);
+    eave.position.y = -0.76 + i * 0.93;
+    pagoda.add(body, eave);
+  }
+  const rod = cyl(0.04, 0.04, 0.38, P.gold, false, 8);
+  rod.position.y = 1.28;
+  const finial = octa(0.11, P.gold);
+  finial.position.y = 1.52;
+  pagoda.add(rod, finial);
+  d.prop(pagoda, { delay: 0.05, span: 0.5, drop: 0.8, idle: bob(0.03, 0.6) });
 
-  const starSpots = [
-    [-1.35, 1.25, 0.3, 0.34],
-    [1.3, 1.7, -0.2, 0.42],
-    [1.5, 0.3, 0.4, 0.26],
-  ];
-  starSpots.forEach(([x, y, z, s], i) => {
-    const st = star(s, P.sunflower);
-    st.position.set(x, y, z);
-    d.prop(st, { delay: 0.45 + i * 0.12, span: 0.35, drop: 0.3, idle: spin(0.5 + i * 0.2, 'z') });
-  });
+  // One lantern hung from the middle eave…
+  const hung = lantern(0.38);
+  hung.position.set(1.0, -0.1, 0.3);
+  d.prop(hung, { delay: 0.5, span: 0.35, drop: 0.3, idle: sway(0.08, 1.2, 1.1) });
 
-  const arrows = [
-    [-1.5, -0.6, P.coral],
-    [1.05, -1.0, P.grape],
+  // …and two loose ones drifting upward — the count, rising.
+  const drifters = [
+    [-1.5, -0.55, 0.3, 0],
+    [1.45, 0.7, -0.3, 2.4],
   ];
-  arrows.forEach(([x, y, c], i) => {
-    const arrow = new Group();
-    const head = cone(0.18, 0.34, c);
-    head.position.y = 0.28;
-    const shaft = cyl(0.07, 0.07, 0.42, c);
-    shaft.position.y = -0.08;
-    arrow.add(head, shaft);
-    arrow.position.set(x, y, 0.2);
-    d.prop(arrow, { delay: 0.6 + i * 0.12, span: 0.35, drop: 0.35, idle: bob(0.1, 1.3, i * 2) });
+  drifters.forEach(([x, y, z, phase], i) => {
+    const lamp = lantern(0.45);
+    lamp.position.set(x, y, z);
+    d.prop(lamp, { delay: 0.6 + i * 0.12, span: 0.35, drop: 0.35, idle: bob(0.28, 0.5, phase) });
   });
 
   return d;
 }
 
-// 04 · willhire — two characters meet; five months later, one name.
+// 03 · willhire — two robed figures meet under a gold bridge; five months
+// later, one name.
 export function buildWillhire() {
   const d = new Diorama();
   d.prop(blobShadow(1.2, -1.6).translateX(-1.05), { delay: 0, span: 0.3, drop: 0 });
   d.prop(blobShadow(1.2, -1.6).translateX(1.05), { delay: 0.08, span: 0.3, drop: 0 });
 
   const blobA = new Group();
-  const bodyA = sphere(0.8, P.coral);
+  const bodyA = sphere(0.8, P.vermillion);
   bodyA.scale.y = 0.92;
   const faceA = eyes(0.26, 0.12);
   faceA.position.set(0.18, 0.18, 0.68);
-  blobA.add(bodyA, faceA);
+  const hatA = cone(0.62, 0.34, P.rice);
+  hatA.position.set(0.05, 0.78, 0.05);
+  hatA.rotation.z = -0.08;
+  blobA.add(bodyA, faceA, hatA);
   blobA.position.set(-1.05, -0.7, 0);
   d.prop(blobA, { delay: 0.05, span: 0.4, drop: 0.6, idle: bob(0.06, 1.1) });
 
   const blobB = new Group();
-  const bodyB = sphere(0.62, P.sky);
+  const bodyB = sphere(0.62, P.jade);
   const faceB = eyes(0.22, 0.1);
   faceB.position.set(-0.14, 0.14, 0.52);
-  blobB.add(bodyB, faceB);
+  const hatB = cone(0.5, 0.28, P.rice);
+  hatB.position.set(-0.04, 0.6, 0.04);
+  hatB.rotation.z = 0.1;
+  blobB.add(bodyB, faceB, hatB);
   blobB.position.set(1.1, -0.82, 0);
   d.prop(blobB, { delay: 0.18, span: 0.4, drop: 0.6, idle: bob(0.06, 1.1, Math.PI) });
 
-  const arc = torus(1.08, 0.07, P.sunflower, Math.PI);
-  arc.position.y = -0.55;
-  d.prop(arc, { delay: 0.5, span: 0.4, drop: 0.3 });
+  const bridge = torus(1.08, 0.07, P.gold, Math.PI);
+  bridge.position.y = -0.55;
+  d.prop(bridge, { delay: 0.5, span: 0.4, drop: 0.3 });
 
-  const heart = octa(0.2, P.bubblegum);
-  heart.position.set(0, 0.85, 0);
-  d.prop(heart, { delay: 0.72, span: 0.28, drop: 0.3, idle: (o, t, b) => {
+  // A thin gold token spinning where the two paths cross.
+  const token = octa(0.2, P.gold);
+  token.position.set(0, 0.85, 0);
+  token.scale.z = 0.45;
+  d.prop(token, { delay: 0.72, span: 0.28, drop: 0.3, idle: (o, t, b) => {
     o.rotation.y = t * 0.8;
     const s = 1 + Math.sin(t * 2.4) * 0.12;
     o.scale.set(b.sx * s, b.sy * s, b.sz * s);
@@ -246,39 +296,39 @@ export function buildWillhire() {
   return d;
 }
 
-// 05 · magnit — the pipe machine: Oracle in, Postgres out, live the whole time.
+// 02 · magnit — the pipe machine: Oracle in, Postgres out, live the whole time.
 export function buildMagnitData() {
   const d = new Diorama();
   d.prop(blobShadow(2.2, -1.9), { delay: 0, span: 0.3, drop: 0 });
 
   const funnel = new Group();
-  const mouth = cyl(0.85, 0.3, 0.8, P.slate);
-  const neck = cyl(0.16, 0.16, 0.5, P.slate);
+  const mouth = cyl(0.85, 0.3, 0.8, P.jade);
+  const neck = cyl(0.16, 0.16, 0.5, P.jade);
   neck.position.y = -0.6;
   funnel.add(mouth, neck);
   funnel.position.set(-1.45, 0.95, 0);
   d.prop(funnel, { delay: 0.05, span: 0.4, drop: 0.5 });
 
   const pipe = new Group();
-  const elbow = torus(0.42, 0.17, P.teal, Math.PI / 2);
+  const elbow = torus(0.42, 0.17, P.azure, Math.PI / 2);
   elbow.rotation.z = Math.PI;
   elbow.position.set(-1.03, 0.12, 0);
-  const run = cyl(0.17, 0.17, 1.9, P.teal);
+  const run = cyl(0.17, 0.17, 1.9, P.azure);
   run.rotation.z = Math.PI / 2;
   run.position.set(0, -0.3, 0);
   // Outlet curves DOWN into the pool: a 0..90° torus quarter has a horizontal
   // tangent at its top and a vertical one at its right — no rotation needed.
-  const outlet = torus(0.42, 0.17, P.teal, Math.PI / 2);
+  const outlet = torus(0.42, 0.17, P.azure, Math.PI / 2);
   outlet.position.set(0.95, -0.72, 0);
-  const spout = cyl(0.17, 0.17, 0.45, P.teal);
+  const spout = cyl(0.17, 0.17, 0.45, P.azure);
   spout.position.set(1.37, -0.95, 0);
   pipe.add(elbow, run, outlet, spout);
   d.prop(pipe, { delay: 0.25, span: 0.45, drop: 0.4 });
 
   const pool = new Group();
-  pool.add(cyl(0.85, 0.7, 0.5, P.sky));
+  pool.add(cyl(0.85, 0.7, 0.5, P.azure));
   for (let i = 0; i < 3; i += 1) {
-    const cube = box(0.26, 0.26, 0.26, [P.sunflower, P.coral, P.mint][i], false);
+    const cube = box(0.26, 0.26, 0.26, [P.gold, P.vermillion, P.jade][i], false);
     cube.position.set(Math.cos(i * 2.6) * 0.35, 0.33, Math.sin(i * 2.6) * 0.3);
     cube.rotation.y = i;
     pool.add(cube);
@@ -286,7 +336,7 @@ export function buildMagnitData() {
   pool.position.set(1.37, -1.5, 0);
   d.prop(pool, { delay: 0.45, span: 0.4, drop: 0.4 });
 
-  // Cubes riding the pipeline — a deterministic loop along the path.
+  // Spirit stones riding the pipeline — a deterministic loop along the path.
   const path = (u) => {
     if (u < 0.25) return [-1.45, 1.5 - u * 4 * 1.1, 0]; // falling into the funnel
     if (u < 0.75) {
@@ -297,8 +347,8 @@ export function buildMagnitData() {
     return [1.03 + w * 0.34, -0.3 - w * 0.95, 0]; // around the outlet, into the pool
   };
   for (let i = 0; i < 4; i += 1) {
-    const cube = box(0.2, 0.2, 0.2, [P.sunflower, P.coral, P.mint, P.bubblegum][i]);
-    d.prop(cube, { delay: 0.6 + i * 0.06, span: 0.3, drop: 0.2, idle: (o, t, b) => {
+    const stone = octa(0.15, [P.gold, P.vermillion, P.jade, P.gold][i]);
+    d.prop(stone, { delay: 0.6 + i * 0.06, span: 0.3, drop: 0.2, idle: (o, t, b) => {
       const u = (t * 0.12 + i * 0.25) % 1;
       const [x, y, z] = path(u);
       o.position.set(x, y, z);
@@ -310,23 +360,30 @@ export function buildMagnitData() {
   return d;
 }
 
-// 06 · maggi — a friendly robot with a head full of sparks.
+// 01 · maggi — a friendly spirit-companion robot, wisps in orbit.
 export function buildMaggi() {
   const d = new Diorama();
   d.prop(blobShadow(1.6, -1.7), { delay: 0, span: 0.3, drop: 0 });
 
   const head = new Group();
-  const skull = box(1.55, 1.25, 1.2, P.white);
+  const skull = box(1.55, 1.25, 1.2, P.rice);
   const face = box(1.2, 0.8, 0.08, P.ink, false);
   face.position.set(0, -0.02, 0.62);
-  const eyeL = capsule(0.09, 0.12, P.mint);
+  // A blank paper tag draped over the forehead — a talisman with nothing
+  // written on it (no glyphs anywhere on this site, by design).
+  const tag = box(0.3, 0.46, 0.03, P.white);
+  tag.position.set(0.32, 0.48, 0.68);
+  tag.rotation.x = -0.06;
+  tag.rotation.z = 0.05;
+  head.add(tag);
+  const eyeL = capsule(0.09, 0.12, P.jade);
   eyeL.position.set(-0.3, 0.05, 0.7);
-  const eyeR = capsule(0.09, 0.12, P.mint);
+  const eyeR = capsule(0.09, 0.12, P.jade);
   eyeR.position.set(0.3, 0.05, 0.7);
-  const mouth = box(0.34, 0.07, 0.04, P.mint, false);
+  const mouth = box(0.34, 0.07, 0.04, P.jade, false);
   mouth.position.set(0, -0.3, 0.7);
   for (const side of [-1, 1]) {
-    const ear = cyl(0.12, 0.12, 0.18, P.coral);
+    const ear = cyl(0.12, 0.12, 0.18, P.vermillion);
     ear.rotation.z = Math.PI / 2;
     ear.position.set(side * 0.86, 0, 0);
     head.add(ear);
@@ -340,14 +397,14 @@ export function buildMaggi() {
 
   const antenna = new Group();
   const rod = cyl(0.04, 0.04, 0.5, P.slate);
-  const tip = sphere(0.14, P.coral);
+  const tip = sphere(0.14, P.vermillion);
   tip.position.y = 0.32;
   antenna.add(rod, tip);
   antenna.position.set(0, 0.35, 0);
   d.prop(antenna, { delay: 0.4, span: 0.35, drop: 0.3, idle: sway(0.12, 1.6) });
 
   const orbit = new Group();
-  const sparkColors = [P.grape, P.sunflower, P.mint, P.coral];
+  const sparkColors = [P.jade, P.gold, P.jade, P.gold];
   for (let i = 0; i < 4; i += 1) {
     const sp = octa(0.15, sparkColors[i]);
     const a = (i / 4) * Math.PI * 2;
@@ -360,15 +417,16 @@ export function buildMaggi() {
   return d;
 }
 
-// 07 · projects — the trophy shelf.
+// 07 · projects — the artifact shelf: three ceremonial podiums, a gold
+// relic hovering over the tallest.
 export function buildProjects() {
   const d = new Diorama();
   d.prop(blobShadow(2.0, -1.75), { delay: 0, span: 0.3, drop: 0 });
 
   const podiums = [
-    [-1.05, 0.7, P.coral],
-    [0, 1.1, P.sunflower],
-    [1.05, 0.5, P.sky],
+    [-1.05, 0.7, P.vermillion],
+    [0, 1.1, P.gold],
+    [1.05, 0.5, P.jade],
   ];
   podiums.forEach(([x, h, c], i) => {
     const p = box(0.92, h, 0.92, c);
@@ -376,24 +434,19 @@ export function buildProjects() {
     d.prop(p, { delay: 0.05 + i * 0.1, span: 0.35, drop: 0.5 });
   });
 
-  const trophy = new Group();
-  const cup = cyl(0.26, 0.14, 0.36, P.sunflower);
-  const stem = cyl(0.05, 0.05, 0.18, P.sunflower, false);
-  stem.position.y = -0.26;
-  const foot = cyl(0.16, 0.18, 0.08, P.brown);
-  foot.position.y = -0.38;
-  const tStar = star(0.2, P.sunflower);
-  tStar.position.y = 0.42;
-  trophy.add(cup, stem, foot, tStar);
-  trophy.position.set(0, -0.18, 0);
-  d.prop(trophy, { delay: 0.4, span: 0.4, drop: 0.5, idle: spin(0.6) });
+  const artifact = octa(0.32, P.gold);
+  artifact.position.set(0, -0.14, 0);
+  d.prop(artifact, { delay: 0.4, span: 0.4, drop: 0.5, idle: (o, t) => {
+    o.rotation.y = t * 0.6;
+    o.position.y = -0.14 + Math.sin(t * 0.9) * 0.09;
+  } });
 
-  const miniPhone = phone(0.42, 0.8, P.grape);
+  const miniPhone = phone(0.42, 0.8, P.plum);
   miniPhone.position.set(-1.05, -0.92, 0);
   miniPhone.rotation.y = 0.25;
   d.prop(miniPhone, { delay: 0.55, span: 0.35, drop: 0.4 });
 
-  const manga = box(0.5, 0.66, 0.12, P.bubblegum);
+  const manga = box(0.5, 0.66, 0.12, P.plum);
   manga.position.set(1.05, -1.08, 0);
   manga.rotation.y = -0.3;
   d.prop(manga, { delay: 0.65, span: 0.35, drop: 0.4 });
@@ -401,37 +454,37 @@ export function buildProjects() {
   return d;
 }
 
-// 08 · contact — a paper plane circling the mailbox, waiting for a reply.
+// 08 · contact — a paper crane circling the mountain gate, a message
+// scroll left at the threshold.
 export function buildContact() {
   const d = new Diorama();
   d.prop(blobShadow(1.5, -1.8), { delay: 0, span: 0.3, drop: 0 });
 
-  const mailbox = new Group();
-  const post = cyl(0.07, 0.09, 1.3, P.brown);
-  post.position.y = -1.1;
-  const bodyBox = box(0.95, 0.6, 0.6, P.coral);
-  bodyBox.position.y = -0.25;
-  const lid = cyl(0.3, 0.3, 0.95, P.coral);
-  lid.rotation.z = Math.PI / 2;
-  lid.scale.y = 1;
-  lid.position.y = 0.05;
-  const flag = box(0.08, 0.3, 0.05, P.sunflower);
-  flag.position.set(0.42, 0.28, 0.2);
-  mailbox.add(post, bodyBox, lid, flag);
-  mailbox.position.y = 0.15;
-  d.prop(mailbox, { delay: 0.05, span: 0.45, drop: 0.7, idle: sway(0.025, 0.8) });
+  const arch = gate(0.85);
+  arch.position.y = -1.75;
+  d.prop(arch, { delay: 0.05, span: 0.45, drop: 0.7, idle: sway(0.012, 0.8) });
 
-  const envelope = box(0.5, 0.34, 0.05, P.white);
-  envelope.position.set(-0.75, -1.55, 0.4);
-  envelope.rotation.set(-0.3, 0.4, 0.1);
-  d.prop(envelope, { delay: 0.5, span: 0.35, drop: 0.3 });
+  const message = scrollProp(0.32);
+  message.position.set(-0.85, -1.62, 0.45);
+  message.rotation.set(-0.25, 0.4, 0.06);
+  d.prop(message, { delay: 0.5, span: 0.35, drop: 0.3 });
 
-  const plane = new Group();
-  const dart = cone(0.26, 0.8, P.white, true, 4);
+  const crane = new Group();
+  const dart = cone(0.2, 0.72, P.white, true, 4);
   dart.rotation.x = Math.PI / 2;
-  dart.scale.set(1, 1, 0.5);
-  plane.add(dart);
-  d.prop(plane, { delay: 0.6, span: 0.4, drop: 0.3, idle: (o, t) => {
+  dart.scale.set(1, 1, 0.45);
+  crane.add(dart);
+  for (const side of [-1, 1]) {
+    const wing = cone(0.36, 0.05, P.white, true, 3);
+    wing.position.set(side * 0.3, 0.08, -0.05);
+    wing.rotation.set(0.15, side * 0.5, side * 0.55);
+    crane.add(wing);
+  }
+  const head = cone(0.06, 0.16, P.vermillion, false, 8);
+  head.position.set(0, 0.06, 0.42);
+  head.rotation.x = 1.1;
+  crane.add(head);
+  d.prop(crane, { delay: 0.6, span: 0.4, drop: 0.3, idle: (o, t) => {
     const a = t * 0.55;
     const r = 1.55;
     o.position.set(Math.cos(a) * r, 0.7 + Math.sin(t * 0.9) * 0.35, Math.sin(a) * r * 0.7);
@@ -443,14 +496,15 @@ export function buildContact() {
   return d;
 }
 
+// Descent order — the story reads backwards, from the summit down.
 export const BUILDERS = [
   buildHero,
-  buildOrigins,
-  buildEdstem,
-  buildPsctalks,
-  buildWillhire,
-  buildMagnitData,
   buildMaggi,
+  buildMagnitData,
+  buildWillhire,
+  buildPsctalks,
+  buildEdstem,
+  buildOrigins,
   buildProjects,
   buildContact,
 ];

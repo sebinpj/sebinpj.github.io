@@ -4,9 +4,9 @@ import { isTouchPrimary } from '../utils/env.js';
 // mostly govern pixel ratio; `low` also drops the inverted-hull outlines,
 // which halve the draw-call count.
 const TIERS = {
-  high: { dprCap: 2, outlines: true },
-  mid: { dprCap: 1.5, outlines: true },
-  low: { dprCap: 1, outlines: false },
+  high: { dprCap: 2, outlines: true, atmosphere: true },
+  mid: { dprCap: 1.5, outlines: true, atmosphere: true },
+  low: { dprCap: 1, outlines: false, atmosphere: false },
 };
 
 export class QualityManager {

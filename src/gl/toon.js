@@ -14,22 +14,22 @@ import {
   RedFormat,
 } from 'three';
 
-// Candy palette (sRGB hex; three's color management handles the rest).
+// Ink-wash palette (sRGB hex; three's color management handles the rest):
+// warm sumi ink, rice paper, and the ceremonial trio — vermillion, gold, jade.
 export const PALETTE = {
-  ink: 0x35345a,
-  cream: 0xfdf6e8,
-  white: 0xffffff,
-  coral: 0xf07a5f,
-  sunflower: 0xf4b942,
-  teal: 0x53b8b0,
-  sky: 0x6fb1ea,
-  grape: 0xa672d8,
-  mint: 0x74c690,
-  lime: 0xa8c95e,
-  bubblegum: 0xf08bb8,
-  brown: 0x9a6b4f,
+  ink: 0x433a32,
+  rice: 0xf6efdf,
+  white: 0xfffaf0,
+  vermillion: 0xc8472f,
+  gold: 0xd9a441,
+  jade: 0x55a17e,
+  azure: 0x6f9fd8,
+  pine: 0x3f7a5a,
+  plum: 0x8d5a8f,
+  earth: 0x9a7b5a,
+  mist: 0xdfe6e3,
   leaf: 0x5fae6b,
-  slate: 0x7c8bd9,
+  slate: 0x8a8fa8,
 };
 
 let gradientMap = null;

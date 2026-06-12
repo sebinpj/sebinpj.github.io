@@ -41,16 +41,19 @@ body {
 
 #gl.is-live { opacity: 1; }
 
-/* Static fallback atmosphere — soft candy blobs on paper, always beneath
-   the bands; the page is fully usable without GL. */
+/* Static fallback atmosphere — ink-wash mountain silhouettes under a warm
+   morning glow; the page is fully usable without GL. */
 .paper-sky {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(46rem 30rem at 82% 8%, oklch(0.92 0.06 85 / 0.7), transparent 65%),
-    radial-gradient(40rem 36rem at 8% 28%, oklch(0.92 0.05 230 / 0.6), transparent 70%),
-    radial-gradient(50rem 40rem at 70% 90%, oklch(0.93 0.05 350 / 0.5), transparent 70%);
+  background-image:
+    radial-gradient(46rem 30rem at 80% 6%, oklch(0.93 0.05 85 / 0.75), transparent 65%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 300' preserveAspectRatio='none'%3E%3Cpath d='M0 300V190L150 80l120 90L420 50l130 110 110-60 140 95L920 70l130 120 150-55v165Z' fill='%238fa0ac' fill-opacity='0.14'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 220' preserveAspectRatio='none'%3E%3Cpath d='M0 220V150L180 60l160 80 170-110 180 120 150-70 180 95 180-85v180Z' fill='%237b8e9c' fill-opacity='0.2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: top right, bottom center, bottom center;
+  background-size: auto, 100% 42vh, 100% 30vh;
 }
 
 .skip-link {
@@ -83,18 +86,18 @@ body {
 }
 
 .site-header.is-scrolled {
-  background: oklch(0.97 0.018 90 / 0.75);
+  background: oklch(0.96 0.01 85 / 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 2px 0 oklch(0.31 0.05 280 / 0.12);
+  box-shadow: 0 2px 0 oklch(0.3 0.025 60 / 0.12);
 }
 
 .site-header a { text-decoration: none; }
 
 .site-header__name {
   font-family: var(--font-display);
-  font-variation-settings: 'SOFT' 70, 'WONK' 1;
-  font-weight: 620;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+  font-weight: 650;
   font-size: 1.1rem;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -114,13 +117,13 @@ body {
 }
 
 .site-header__cta:hover {
-  background: var(--accent);
+  background: var(--seal);
   color: var(--paper);
   transform: translate(0.05rem, 0.08rem) scale(1.03, 0.97);
-  box-shadow: 0.08rem 0.1rem 0 oklch(0.31 0.05 280 / 0.85);
+  box-shadow: 0.08rem 0.1rem 0 oklch(0.3 0.025 60 / 0.85);
 }
 
-/* Right-edge chapter progress dots (decorative candy). */
+/* Right-edge chapter progress dots (decorative). */
 .chapter-dots {
   position: fixed;
   right: 1.1rem;

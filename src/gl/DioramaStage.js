@@ -7,15 +7,15 @@ import { clamp } from '../utils/math.js';
 // x is a multiplier on the responsive base offset. Optional m overrides
 // the default raised-and-centred mobile placement.
 const LAYOUT = [
-  { x: 1, y: 0, s: 1, m: { y: -2.6, s: 0.5 } }, // 00 hero — mobile: below the tall headline
-  { x: -1, y: 0, s: 1 }, //   01 origins — stage left
-  { x: 1, y: 0, s: 1 }, //    02 edstem
-  { x: -1, y: 0, s: 1 }, //   03 psctalks
-  { x: 1, y: 0, s: 1 }, //    04 willhire
-  { x: -1.12, y: 0, s: 0.85, m: { x: 1.0, y: -1.4, s: 0.38 } }, // 05 magnit — wide machine, nudged clear of the copy; mobile: beside the stat stack
-  { x: 1, y: 0, s: 1 }, //    06 maggi
-  { x: 1.3, y: 1.5, s: 0.6, m: { y: 3.1, s: 0.42 } }, // 07 projects — small, peeking over the cards; mobile: perched on the scallop
-  { x: 0.95, y: 0.2, s: 0.85, m: { x: -1.1, y: -2.4, s: 0.45 } }, // 08 contact — beside the centred sign-off; mobile: planted by the colophon
+  { x: 1, y: 0, s: 1, m: { y: -3.0, s: 0.36 } }, // 00 hero — mobile: tucked under the chip cloud; the summit clears as you scroll
+  { x: -1, y: 0, s: 1 }, //   01 maggi — stage left
+  { x: 1.12, y: 0, s: 0.85, m: { x: 1.0, y: -1.4, s: 0.38 } }, // 02 magnit — wide machine, nudged clear of the copy; mobile: beside the stat stack
+  { x: -1, y: 0, s: 1 }, //   03 willhire
+  { x: 1, y: 0, s: 1, m: { y: -1.95, s: 0.5 } }, // 04 psctalks — the pagoda is tall; lift and shrink so the finial clears
+  { x: -1, y: 0, s: 1, m: { y: -3.3, s: 0.38 } }, // 05 edstem — long copy on mobile; tuck the scroll below the chips
+  { x: 1, y: 0, s: 1, m: { y: -3.2, s: 0.45 } }, // 06 origins — mobile: the little stack sits under the closing line
+  { x: 1.3, y: 1.5, s: 0.6, m: { y: 3.1, s: 0.42 } }, // 07 projects — small, peeking over the cards; mobile: perched on the cloud edge
+  { x: 1.18, y: 0.2, s: 0.85, m: { x: -1.2, y: -2.4, s: 0.5 } }, // 08 contact — the gate is wide; clear of the centred sign-off. Mobile: planted by the colophon
 ];
 
 // The outgoing set packs up over the first 45% of a transition, the next one

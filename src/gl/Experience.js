@@ -6,6 +6,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import { gsap } from 'gsap';
+import { Atmosphere } from './Atmosphere.js';
 import { DioramaStage } from './DioramaStage.js';
 import { QualityManager } from './QualityManager.js';
 import { CameraRig } from './CameraRig.js';
@@ -42,6 +43,11 @@ class Experience {
 
     this.stage = new DioramaStage();
     this.scene.add(this.stage.group);
+
+    if (this.quality.tier.atmosphere) {
+      this.atmosphere = new Atmosphere();
+      this.scene.add(this.atmosphere.group);
+    }
 
     this.quality.onDemote = () => this._applySize();
 
@@ -114,6 +120,7 @@ class Experience {
     const cp = clamp(glState.chapterProgress, 0, 8);
     this.stage.setProgress(cp);
     this.stage.update(this._time);
+    this.atmosphere?.update(this._time, cp);
 
     // Fast scrolling gives the whole stage a little cartoon lean, like wind.
     const targetLean = clamp(glState.scrollVelocity, -0.6, 0.6) * -0.06;
@@ -136,6 +143,7 @@ class Experience {
     removeEventListener('pointermove', this._onPointerMove);
     this.canvas.classList.remove('is-live');
     this.stage.dispose();
+    this.atmosphere?.dispose();
     this.renderer.dispose();
     experience = null;
   }

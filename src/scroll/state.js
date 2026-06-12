@@ -2,10 +2,10 @@
 // frame. Keeping this a plain object means zero coupling between the two
 // bundles — the GL chunk can load (or fail) independently of the motion layer.
 
-// Accent hue per chapter (OKLCH hue) — candy progression matching the static
-// band tints in sections.css: sky, sunflower, mint, grape, coral, ocean,
-// bubblegum, lime, and a warm golden send-off.
-export const CHAPTER_HUES = [230, 90, 150, 310, 30, 220, 350, 120, 85];
+// Accent hue per chapter (OKLCH hue) — descent progression matching the
+// static band tints in sections.css: summit gold, jade, misty azure,
+// vermillion, lantern gold, pine, bamboo earth, treasure gold, seal red.
+export const CHAPTER_HUES = [85, 165, 235, 35, 75, 150, 120, 85, 30];
 
 export const glState = {
   // 0..8 — fractional while morphing between chapter forms.

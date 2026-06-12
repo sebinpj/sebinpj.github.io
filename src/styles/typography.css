@@ -42,10 +42,10 @@ body {
 h1, h2, h3 {
   font-family: var(--font-display);
   font-optical-sizing: auto;
-  /* SOFT rounds the serifs, WONK swaps in the playful alternates —
-     this is what makes Fraunces read "storybook" instead of "editorial". */
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  font-weight: 640;
+  /* SOFT 0 / WONK 0 gives Fraunces its sharpest, highest-contrast serifs —
+     the closest this file gets to brush-cut ink strokes. */
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+  font-weight: 680;
   line-height: 1.12;
   letter-spacing: -0.01em;
   text-wrap: balance;

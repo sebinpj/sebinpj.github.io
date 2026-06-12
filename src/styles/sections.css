@@ -1,7 +1,7 @@
 /* ---------- Chapter bands ----------
-   Each chapter is a tinted storybook band. Tints are STATIC per chapter
-   (the tweened --accent-h would repaint whole bands on every scroll frame);
-   only small accents follow the scroll-driven hue. */
+   Each chapter is a tinted ink-wash band on rice paper. Tints are STATIC per
+   chapter (the tweened --accent-h would repaint whole bands on every scroll
+   frame); only small accents follow the scroll-driven hue. */
 
 .chapter {
   position: relative;
@@ -10,34 +10,42 @@
   align-items: center;
   padding: var(--space-5) var(--gutter) calc(var(--space-5) + 1.5rem);
   background-color: var(--band, transparent);
-  /* faint polka texture, storybook paper */
-  background-image: radial-gradient(oklch(0.31 0.05 280 / 0.045) 1.2px, transparent 1.3px);
-  background-size: 1.5rem 1.5rem;
+  /* faint fleck texture (paper fiber) over a barely-there mountain line
+     anchored to the band's foot — the ink-wash horizon survives GL-off. */
+  background-image:
+    radial-gradient(oklch(0.3 0.025 60 / 0.035) 1.2px, transparent 1.3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 160' preserveAspectRatio='none'%3E%3Cpath d='M0 160v-40l150-60 130 70 160-95 170 100 140-60 180 85 160-90 110 75v15Z' fill='%23433a32' fill-opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 1.7rem 1.7rem, 100% 9rem;
+  background-position: 0 0, bottom center;
+  background-repeat: repeat, no-repeat;
 }
 
-.chapter[data-chapter='0'] { --band: oklch(0.95 0.04 230); --band-accent: oklch(0.62 0.16 230); }
-.chapter[data-chapter='1'] { --band: oklch(0.95 0.055 90); --band-accent: oklch(0.6 0.14 80); }
-.chapter[data-chapter='2'] { --band: oklch(0.95 0.05 150); --band-accent: oklch(0.56 0.15 150); }
-.chapter[data-chapter='3'] { --band: oklch(0.945 0.04 310); --band-accent: oklch(0.56 0.18 310); }
-.chapter[data-chapter='4'] { --band: oklch(0.95 0.045 30); --band-accent: oklch(0.6 0.17 30); }
-.chapter[data-chapter='5'] { --band: oklch(0.94 0.045 220); --band-accent: oklch(0.56 0.15 220); }
-.chapter[data-chapter='6'] { --band: oklch(0.95 0.04 350); --band-accent: oklch(0.58 0.18 350); }
-.chapter[data-chapter='7'] { --band: oklch(0.955 0.055 120); --band-accent: oklch(0.55 0.14 130); }
-.chapter[data-chapter='8'] { --band: oklch(0.95 0.06 85); --band-accent: oklch(0.58 0.15 60); }
+/* Descent order: summit gold → jade → misty azure → vermillion → lantern
+   gold → pine → bamboo earth → treasure gold → seal red. */
+.chapter[data-chapter='0'] { --band: oklch(0.955 0.022 85); --band-accent: oklch(0.62 0.13 80); }
+.chapter[data-chapter='1'] { --band: oklch(0.952 0.02 165); --band-accent: oklch(0.55 0.12 165); }
+.chapter[data-chapter='2'] { --band: oklch(0.95 0.018 235); --band-accent: oklch(0.55 0.12 235); }
+.chapter[data-chapter='3'] { --band: oklch(0.953 0.02 35); --band-accent: oklch(0.57 0.16 30); }
+.chapter[data-chapter='4'] { --band: oklch(0.955 0.026 75); --band-accent: oklch(0.6 0.13 70); }
+.chapter[data-chapter='5'] { --band: oklch(0.952 0.018 150); --band-accent: oklch(0.54 0.11 150); }
+.chapter[data-chapter='6'] { --band: oklch(0.955 0.02 120); --band-accent: oklch(0.55 0.1 125); }
+.chapter[data-chapter='7'] { --band: oklch(0.955 0.024 85); --band-accent: oklch(0.6 0.13 80); }
+.chapter[data-chapter='8'] { --band: oklch(0.95 0.02 30); --band-accent: oklch(0.57 0.17 30); }
 
-/* Scalloped storybook edge hanging into the next band. */
+/* Cloud-scroll edge hanging into the next band — the page silhouette
+   reads as a cloud sea instead of a scalloped storybook. */
 .chapter::after {
   content: '';
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  height: 1.4rem;
+  height: 1.6rem;
   background: var(--band);
-  -webkit-mask-image: radial-gradient(1.65rem 1.4rem at 50% 0%, #000 99%, #0000 101%);
-  mask-image: radial-gradient(1.65rem 1.4rem at 50% 0%, #000 99%, #0000 101%);
-  -webkit-mask-size: 2.9rem 100%;
-  mask-size: 2.9rem 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 26'%3E%3Crect width='64' height='9'/%3E%3Ccircle cx='10' cy='9' r='9'/%3E%3Ccircle cx='29' cy='9' r='13'/%3E%3Ccircle cx='50' cy='9' r='10'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 26'%3E%3Crect width='64' height='9'/%3E%3Ccircle cx='10' cy='9' r='9'/%3E%3Ccircle cx='29' cy='9' r='13'/%3E%3Ccircle cx='50' cy='9' r='10'/%3E%3C/svg%3E");
+  -webkit-mask-size: 4rem 100%;
+  mask-size: 4rem 100%;
   -webkit-mask-repeat: repeat-x;
   mask-repeat: repeat-x;
   z-index: 1;
@@ -74,30 +82,41 @@
   .chapter--flip .chapter__inner { display: block; }
   .chapter--flip .chapter__copy { grid-column: auto; }
   .chapter__stage { min-height: clamp(10rem, 36vw, 15rem); }
+  /* Ground for the gate diorama below the colophon. */
+  .chapter--contact { padding-bottom: 14rem; }
 }
 
 /* ---------- Badges (chapter index stickers) ---------- */
 
 .chapter__index {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   background: var(--card);
   color: var(--ink);
   border: var(--border-sticker);
   border-radius: 99px;
-  padding: 0.35rem 0.95rem;
+  padding: 0.3rem 0.95rem 0.3rem 0.4rem;
   box-shadow: var(--shadow-sticker-sm);
   transform: rotate(-1.5deg);
   margin: 0 0 var(--space-3);
 }
 
-.chapter__index::before {
-  content: '';
-  display: inline-block;
-  width: 0.55em;
-  height: 0.55em;
-  border-radius: 50%;
-  background: var(--band-accent, var(--accent));
-  margin-right: 0.55em;
+/* Vermillion seal stamp — hand-cut corners, slightly off-true, like a
+   chop pressed onto the page. Holds only a decorative numeral. */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75em;
+  height: 1.75em;
+  flex-shrink: 0;
+  margin-right: 0.6em;
+  background: var(--seal);
+  color: oklch(0.97 0.012 85);
+  font-weight: 700;
+  border-radius: 0.5em 0.3em 0.55em 0.35em;
+  transform: rotate(-4deg);
+  box-shadow: 0.08rem 0.12rem 0 oklch(0.3 0.025 60 / 0.55);
 }
 
 .chapter__title {
@@ -184,14 +203,16 @@
   .hero__scroll-cue { animation: none; }
 }
 
-/* GSAP-driven confetti bits for the 500k counter pop. */
-.confetti-bit {
+/* GSAP-driven lantern embers for the 500k counter pop. JS sets background
+   and color to the same ember tint; the glow reads currentColor. */
+.ember-bit {
   position: fixed;
-  width: 9px;
-  height: 13px;
-  border-radius: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
   z-index: 50;
   pointer-events: none;
+  box-shadow: 0 0 0.5rem currentColor;
   will-change: transform;
 }
 
@@ -247,7 +268,7 @@
 
 .stat-hero__figure {
   font-family: var(--font-display);
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
   font-weight: 700;
   font-size: var(--size-stat);
   line-height: 1;
@@ -386,7 +407,7 @@
 
 .project-card:hover {
   transform: rotate(0deg) translateY(-0.3rem);
-  box-shadow: 0.3rem 0.55rem 0 oklch(0.31 0.05 280 / 0.9);
+  box-shadow: 0.3rem 0.55rem 0 oklch(0.3 0.025 60 / 0.9);
 }
 
 .project-card > a {
@@ -452,7 +473,7 @@
   background: var(--band-accent, var(--accent));
   color: var(--paper);
   transform: translate(0.1rem, 0.15rem) scale(1.03, 0.96);
-  box-shadow: 0.1rem 0.14rem 0 oklch(0.31 0.05 280 / 0.9);
+  box-shadow: 0.1rem 0.14rem 0 oklch(0.3 0.025 60 / 0.9);
 }
 
 .contact__links {

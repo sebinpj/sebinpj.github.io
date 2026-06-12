@@ -1,17 +1,21 @@
 :root {
   /* Accent hue is scroll-driven (GSAP writes --accent-h per chapter). */
-  --accent-h: 230;
+  --accent-h: 85;
 
-  /* Warm paper + candy world */
-  --paper: oklch(0.965 0.022 90);
-  --card: oklch(0.99 0.01 95);
-  --ink: oklch(0.31 0.05 280);
-  --ink-soft: oklch(0.43 0.04 280);
-  --ink-faint: oklch(0.54 0.035 280);
-  --accent: oklch(0.64 0.17 var(--accent-h));
-  --accent-bright: oklch(0.72 0.18 var(--accent-h));
-  --accent-soft: oklch(0.64 0.17 var(--accent-h) / 0.3);
-  --line: oklch(0.31 0.05 280 / 0.16);
+  /* Rice paper + ink-wash world: warm sumi ink on paper, with vermillion,
+     gold and jade as the fixed ceremonial colors (never hue-tweened). */
+  --paper: oklch(0.958 0.012 85);
+  --card: oklch(0.985 0.008 90);
+  --ink: oklch(0.3 0.025 60);
+  --ink-soft: oklch(0.42 0.02 60);
+  --ink-faint: oklch(0.53 0.018 60);
+  --seal: oklch(0.55 0.19 30);
+  --gold: oklch(0.72 0.13 85);
+  --jade: oklch(0.62 0.11 165);
+  --accent: oklch(0.6 0.14 var(--accent-h));
+  --accent-bright: oklch(0.68 0.15 var(--accent-h));
+  --accent-soft: oklch(0.6 0.14 var(--accent-h) / 0.3);
+  --line: oklch(0.3 0.025 60 / 0.16);
 
   --font-display: 'Fraunces', 'Georgia', serif;
   --font-body: 'Schibsted Grotesk', 'Helvetica Neue', sans-serif;
@@ -35,8 +39,8 @@
   /* Sticker design language */
   --radius-sticker: 1.1rem;
   --border-sticker: 2px solid var(--ink);
-  --shadow-sticker: 0.22rem 0.3rem 0 oklch(0.31 0.05 280 / 0.9);
-  --shadow-sticker-sm: 0.14rem 0.2rem 0 oklch(0.31 0.05 280 / 0.85);
+  --shadow-sticker: 0.22rem 0.3rem 0 oklch(0.3 0.025 60 / 0.9);
+  --shadow-sticker-sm: 0.14rem 0.2rem 0 oklch(0.3 0.025 60 / 0.85);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
