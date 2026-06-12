@@ -5,10 +5,12 @@
 > Kerala, India, working remotely.
 
 This is a single-page portfolio. The page tells the story in nine chapters:
-self-taught origins; Edstem Technologies (2017–2021, junior → lead, WhatsApp
-Web automation before official APIs existed); PSCTalks (exam-coaching app
-built solo, 500k+ downloads, 4.6★); WillHire (lead full-stack, acquired by
-PRO Unlimited / Magnit in 2021); Magnit data infrastructure (near-zero-downtime
+self-taught origins; Edstem Technologies (2017–2021, junior → lead, built a
+WhatsApp Web automation interface before official APIs existed — never
+shipped — and migrated a legacy Java monolith to Node.js microservices on
+Kubernetes); PSCTalks (client app shipped as its initial solo developer, now
+maintained by a full team, 500k+ downloads, 4.6★); WillHire (lead full-stack,
+acquired by PRO Unlimited / Magnit in 2021); Magnit data infrastructure (near-zero-downtime
 Oracle→Postgres migration via Kafka + Debezium, the "Data Ocean" OLAP
 warehouse); and Maggi (Magnit's GenAI companion — LLM orchestration, RAG over
 pgvector — built by his team of eleven).
